@@ -19,5 +19,6 @@ class QuotesSpiderSpider(scrapy.Spider):
         next_page_url = response.xpath("//li[@class='next']//a/@href").extract_first()
         if next_page_url:
             absolute_next_page_url = response.urljoin(next_page_url)
-            yield scrapy.Request(absolute_next_page_url)
+            yield scrapy.Request(absolute_next_page_url, callback=self.parse)
+# yield response.follow(next_page_url, callback=self.parse) -> same as two above lines. It accepts <a> tag also.
 
