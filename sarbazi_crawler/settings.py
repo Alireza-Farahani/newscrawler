@@ -65,9 +65,13 @@ ROBOTSTXT_OBEY = True
 
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
-#ITEM_PIPELINES = {
-#    'sarbazi_crawler.pipelines.SarbaziCrawlerPipeline': 300,
-#}
+ITEM_PIPELINES = {
+    # 'sarbazi_crawler.pipelines.SarbaziCrawlerPipeline': 300,
+    'sarbazi_crawler.pipelines.DuplicatesPipeline': 300,
+    'sarbazi_crawler.pipelines.MongoDBPipeline': 310
+}
+# TODO: user pass? different address per environment
+MONGO_URI = 'localhost:27017'
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See https://docs.scrapy.org/en/latest/topics/autothrottle.html

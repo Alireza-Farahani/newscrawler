@@ -1,6 +1,7 @@
 from scrapy import Spider
+from scrapy.loader import ItemLoader
 
-from sarbazi_crawler.items import Article
+from sarbazi_crawler.items import Article, ArticleLoader
 
 
 class ScienceDailyArticleSpider(Spider):
@@ -10,20 +11,24 @@ class ScienceDailyArticleSpider(Spider):
                   'https://www.sciencedaily.com/releases/2019/11/191114124048.htm']
 
     def parse(self, response):
-        title: str = response.xpath("//h1[@id='headline']/text()").get()
-        subtitle: str = response.xpath("//h2[@id='subtitle']/text()").get()  # optional
+        l: ItemLoader = ArticleLoader(item=Article(), response=response)
+        l.add_value('url', response.url)
 
-        date: str = response.xpath("//dd[@id='date_posted']/text()").get()  # ::before dare. check konesh
-        source: str = response.xpath("//dd[@id='source']/text()").get()  # in ham ::before dare. check konesh
-        summary: str = response.xpath("//dd[@id='abstract']/text()").get()  # in ham ::before dare. check konesh
+        l.add_xpath('title', "//h1[@id='headline']")
+        l.add_xpath('subtitle', "//h2[@id='subtitle']")  # optional
 
-        text = response.xpath("//div[@id='text']")  # concat <p>s todo:type hint. item pipeline
+        l.add_xpath('date', "//dd[@id='date_posted']")  #
+        l.add_xpath('source', "//dd[@id='source']")  #
+        l.add_xpath('summary', "//dd[@id='abstract']")
+
+        l.add_xpath('text', "//div[@id='text']/p")  # <p>s are joined in related 'Item Loader'
 
         # see nesting selectors https://docs.scrapy.org/en/latest/topics/selectors.html#working-with-relative-xpaths
-        source_segment = response.xpath("//div[@id='story_source']/p[2]")
-        source_url = source_segment.xpath("./a/strong/../@href").get()
-        source_article_url = source_segment.xpath("./a[contains(text(), 'Materials')]/@href").get()
+        # see nesting loaders https://docs.scrapy.org/en/latest/topics/loaders.html#nested-loaders
+        source_segment_loader = l.nested_xpath("//div[@id='story_source']/p[2]")
+        source_segment_loader.add_xpath('source_url', "./a/strong/../@href")
+        # optional
+        source_segment_loader.add_xpath('source_article_url', "./a[contains(text(), 'Materials')]/@href")
 
-        article = Article(url=response.url, title=title, subtitle=subtitle, date=date, source=source, summary=summary,
-                          text=text, source_url=source_url, source_article_url=source_article_url)
-        print(article)
+        # print(l.load_item())
+        yield l.load_item()
