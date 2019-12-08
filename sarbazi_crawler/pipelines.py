@@ -38,7 +38,7 @@ class MongoDBPipeline(object):
     def from_crawler(cls, crawler):
         return cls(  # TODO: correct name for db and collection
             mongo_uri=crawler.settings.get('MONGO_URI'),
-            mongo_db=crawler.settings.get('MONGO_DATABASE', 'items'),
+            mongo_db=crawler.settings.get('MONGO_DATABASE', 'crawler'),
             collection_name=crawler.settings.get('MONGO_COLLECTION', 'articles')
         )
 

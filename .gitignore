@@ -1,4 +1,9 @@
 # Created by .ignore support plugin (hsz.mobi)
+
+### Project specific rules
+Things to consider.txt
+crawls/
+
 ### Python template
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -275,4 +280,5 @@ Icon
 Network Trash Folder
 Temporary Items
 .apdisk
-Things to consider.txt
+
+
