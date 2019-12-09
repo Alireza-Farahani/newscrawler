@@ -22,7 +22,7 @@ class SarbaziCrawlerItem(scrapy.Item):
 
 
 # TODO: different class per news website?
-class Article(scrapy.Item):
+class ArticleItem(scrapy.Item):
     url = scrapy.Field()
     title = scrapy.Field()
     subtitle = scrapy.Field()  # optional
