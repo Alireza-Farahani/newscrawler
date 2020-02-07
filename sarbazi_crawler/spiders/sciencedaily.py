@@ -3,7 +3,7 @@ from itertools import chain
 from scrapy import Spider
 from scrapy.loader import ItemLoader
 
-from sarbazi_crawler.items import ArticleItem, ArticleLoader
+from sarbazi_crawler.items import ArticleItem, ScienceDailyArticleLoader
 
 
 class ScienceDailySpider(Spider):
@@ -20,6 +20,7 @@ class ScienceDailySpider(Spider):
         # top headlines, latest headlines and earlier headlines. We need all of them to ensure we don't miss anything.
 
         # scrapy docs says use css selectors when selecting by tag/elements's class
+        # https://docs.scrapy.org/en/latest/topics/selectors.html#when-querying-by-class-consider-using-css
         top_headlines = response.css("div#heroes h3.latest-head a")
         latest_headlines = response.xpath("//ul[@id='featured_shorts']//a")
         earlier_headlines_segment = response.xpath("//div[@id='headlines']")
@@ -34,7 +35,7 @@ class ScienceDailySpider(Spider):
 
     # noinspection PyMethodMayBeStatic
     def parse_news(self, response):
-        loader: ItemLoader = ArticleLoader(item=ArticleItem(), response=response)
+        loader: ItemLoader = ScienceDailyArticleLoader(item=ArticleItem(), response=response)
         loader.add_value('url', response.url)
 
         loader.add_xpath('title', "//h1[@id='headline']")
@@ -44,12 +45,11 @@ class ScienceDailySpider(Spider):
         loader.add_xpath('source', "//dd[@id='source']")  #
         loader.add_xpath('summary', "//dd[@id='abstract']")
 
-        loader.add_xpath('text', "//div[@id='text']/p")  # <p>s are joined in related 'Item Loader'
+        loader.add_xpath('content', "//div[@id='text']/p")  # <p>s are joined in related 'Item Loader'
 
         # see nesting selectors https://docs.scrapy.org/en/latest/topics/selectors.html#working-with-relative-xpaths
         # see nesting loaders https://docs.scrapy.org/en/latest/topics/loaders.html#nested-loaders
         source_segment_loader = loader.nested_xpath("//div[@id='story_source']/p[2]")
-        source_segment_loader.add_xpath('source_url', "./a/strong/../@href")
         source_segment_loader.add_xpath('source_article_url', "./a[contains(text(), 'Materials')]/@href")  # optional
 
         yield loader.load_item()

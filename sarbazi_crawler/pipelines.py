@@ -34,12 +34,14 @@ class MongoDBPipeline(object):
         self.mongo_db = mongo_db
         self.collection_name = collection_name
 
+        self.client, self.db = None, None
+
     @classmethod
     def from_crawler(cls, crawler):
         return cls(  # TODO: correct name for db and collection
             mongo_uri=crawler.settings.get('MONGO_URI'),
             mongo_db=crawler.settings.get('MONGO_DATABASE', 'crawler'),
-            collection_name=crawler.settings.get('MONGO_COLLECTION', 'articles')
+            collection_name=crawler.settings.get('MONGO_COLLECTION', crawler.spider.name)
         )
 
     def open_spider(self, spider):

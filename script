@@ -1,0 +1,8 @@
+# using jobs in to avoid parsing old/duplicate urls. see
+# see https://scrapy.readthedocs.io/en/latest/topics/jobs.html
+
+# scrapy crawl command only runs single spider. To run all at once we use 'xargs' with -I option for spider name
+# see https://stackoverflow.com/questions/15564844/locally-run-all-of-the-spiders-in-scrapy
+# also we can use 'crawl spider1 spider2 spider3'
+
+scrapy list|xargs -n 1 -I % scrapy crawl % -s JOBDIR=crawls/%
