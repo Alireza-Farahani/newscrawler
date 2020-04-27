@@ -5,13 +5,11 @@
 # See documentation in:
 # https://docs.scrapy.org/en/latest/topics/items.html
 from datetime import datetime
-from typing import List, Iterable
 
 import scrapy
 from scrapy.loader import ItemLoader, Identity
 from scrapy.loader.processors import TakeFirst, Compose, MapCompose, Join
 from w3lib.html import remove_tags, remove_tags_with_content
-
 
 # TODO: base item, having an id to be checked in DuplicatePipeline. For example 'url' could be id for Articles
 # class BaseItem(scrapy.Item)
@@ -44,23 +42,27 @@ class ScienceDailyArticleLoader(ArticleLoader):
                          remove_tags,
                          str.strip, )
 
-    date_out = MapCompose(
+    date_out = Compose(
+        TakeFirst(),
         lambda date_str: datetime.strptime(date_str, "%B %d, %Y"), )
 
 
 class LiveScienceArticleLoader(ArticleLoader):
     # Fixme: what to do with 'Update on data' lines?
     # returning None drops that scraped item. see https://docs.scrapy.org/en/latest/topics/loaders.html
-    content_in = Compose(MapCompose(lambda x: None if "<strong>Related" in x else x,  # related posts
-                                    lambda x: None if "<em>[" in x else x,  # signup for source newsletter
-                                    remove_tags,
-                                    remove_unicode_whitespaces,
-                                    str.strip,),
-                         DropLast(),  # last p not related to article body (mostly 'Originally published in LIVESCIENCE)
-                         Join(), )
+    content_in = Compose(
+        MapCompose(lambda x: None if "<strong>Related" in x else x,  # related posts
+                   lambda x: None if "<em>[" in x else x,  # signup for source newsletter
+                   remove_tags,
+                   remove_unicode_whitespaces,
+                   str.strip, ),
+        DropLast(),  # last p not related to article body (mostly 'Originally published in LIVESCIENCE')
+        Join(), )
 
-    date_out = MapCompose(
-        lambda date_str: datetime.fromisoformat(date_str), )
+    date_out = Compose(
+        TakeFirst(),
+        lambda iso_date: iso_date.replace("Z", "+00:00"),  # https://stackoverflow.com/q/19654578/1660013
+        lambda iso_date: datetime.fromisoformat(iso_date), )
 
 
 class ScienceAlertLoader(ArticleLoader):
@@ -72,5 +74,6 @@ class ScienceAlertLoader(ArticleLoader):
                          DropLast(),  # last p is about source article
                          Join(), )
 
-    date_out = MapCompose(  # sciencealert format: 3 FEBRUARY 2020
+    date_out = Compose(  # sciencealert format: 3 FEBRUARY 2020
+        TakeFirst(),
         lambda date_str: datetime.strptime(date_str, "%d %B %Y"), )
