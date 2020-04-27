@@ -4,7 +4,8 @@
 #
 # See documentation in:
 # https://docs.scrapy.org/en/latest/topics/items.html
-from typing import List
+from datetime import datetime
+from typing import List, Iterable
 
 import scrapy
 from scrapy.loader import ItemLoader, Identity
@@ -15,14 +16,7 @@ from w3lib.html import remove_tags, remove_tags_with_content
 # TODO: base item, having an id to be checked in DuplicatePipeline. For example 'url' could be id for Articles
 # class BaseItem(scrapy.Item)
 # class Article(BaseItem)
-
-
-def drop_last(values: List):  # could be changed to a processor class later.
-    return values[:-1]
-
-
-def remove_unicode_whitespaces(value: str):
-    return value.replace('\xa0', '')
+from sarbazi_crawler.utils import DropLast, remove_unicode_whitespaces
 
 
 class ArticleItem(scrapy.Item):
@@ -41,7 +35,7 @@ class ArticleLoader(ItemLoader):
     default_output_processor = TakeFirst()
     default_input_processor = MapCompose(remove_tags, str.strip)
     url_in = Identity()
-    tags_out = Identity()
+    # tags_out = Identity()
 
 
 class ScienceDailyArticleLoader(ArticleLoader):
@@ -49,6 +43,9 @@ class ScienceDailyArticleLoader(ArticleLoader):
                          lambda x: remove_tags_with_content(x, ('div',)),  # there's "div"s for advertisements
                          remove_tags,
                          str.strip, )
+
+    date_out = MapCompose(
+        lambda date_str: datetime.strptime(date_str, "%B %d, %Y"), )
 
 
 class LiveScienceArticleLoader(ArticleLoader):
@@ -58,9 +55,12 @@ class LiveScienceArticleLoader(ArticleLoader):
                                     lambda x: None if "<em>[" in x else x,  # signup for source newsletter
                                     remove_tags,
                                     remove_unicode_whitespaces,
-                                    str.strip),
-                         drop_last,  # last p not related to article body (mostly 'Originally published in LIVESCIENCE)
+                                    str.strip,),
+                         DropLast(),  # last p not related to article body (mostly 'Originally published in LIVESCIENCE)
                          Join(), )
+
+    date_out = MapCompose(
+        lambda date_str: datetime.fromisoformat(date_str), )
 
 
 class ScienceAlertLoader(ArticleLoader):
@@ -69,5 +69,8 @@ class ScienceAlertLoader(ArticleLoader):
                                     remove_tags,
                                     remove_unicode_whitespaces,
                                     str.strip),
-                         drop_last,  # last p is about source article
+                         DropLast(),  # last p is about source article
                          Join(), )
+
+    date_out = MapCompose(  # sciencealert format: 3 FEBRUARY 2020
+        lambda date_str: datetime.strptime(date_str, "%d %B %Y"), )

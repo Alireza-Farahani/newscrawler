@@ -1,11 +1,8 @@
-
-
-from itertools import chain
-
 from scrapy import Spider
+from scrapy.http import Response, TextResponse
 from scrapy.loader import ItemLoader
 
-from sarbazi_crawler.items import ArticleItem, ScienceDailyArticleLoader, ScienceAlertLoader
+from sarbazi_crawler.items import ArticleItem, ScienceAlertLoader
 
 
 class ScienceDailySpider(Spider):
@@ -17,7 +14,7 @@ class ScienceDailySpider(Spider):
         'https://www.sciencealert.com/physics',
     ]
 
-    def parse(self, response):
+    def parse(self, response: Response):
         # In Sciencedaily category pages, news link are separated in 3 segment:
         # top headlines, latest headlines and earlier headlines. We need all of them to ensure we don't miss anything.
 
@@ -28,7 +25,7 @@ class ScienceDailySpider(Spider):
             yield response.follow(link, callback=self.parse_news)
 
     # noinspection PyMethodMayBeStatic
-    def parse_news(self, response):
+    def parse_news(self, response: TextResponse):
         loader: ItemLoader = ScienceAlertLoader(item=ArticleItem(), response=response)
         loader.add_value('url', response.url)
 
@@ -37,9 +34,14 @@ class ScienceDailySpider(Spider):
         article_loader = loader.nested_css("div.main-article")
         article_loader.add_css('title', "h1")
 
-        # some articles have date in div.author-name-name! e.g.
+        # TODO: some articles have date in div.author-name-name! e.g.
         # https://www.sciencealert.com/us-life-expectancy-just-increased-for-the-first-time-in-4-years
-        article_loader.add_css('date', "div.author-name-date span")
+        # So in these cases we pick second 'author-name-name'
+        if len(response.css("div.author-name-date span")) == 1:
+            css_sel = "div.author-name-date span"
+        else:
+            css_sel = "div.author-name-name:last-child span"
+        article_loader.add_css('date', css_sel)
 
         body_loader = article_loader.nested_css("div.article-fulltext")
         body_loader.add_css('content', "p")  # <p>s are joined in related 'Item Loader'

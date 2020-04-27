@@ -38,10 +38,10 @@ class MongoDBPipeline(object):
 
     @classmethod
     def from_crawler(cls, crawler):
-        return cls(  # TODO: correct name for db and collection
+        return cls(  # TODO: correct name for db
             mongo_uri=crawler.settings.get('MONGO_URI'),
             mongo_db=crawler.settings.get('MONGO_DATABASE', 'crawler'),
-            collection_name=crawler.settings.get('MONGO_COLLECTION', crawler.spider.name)
+            collection_name=crawler.settings.get('MONGO_COLLECTION', crawler.spider.name if crawler.spider else "temp_spider")
         )
 
     def open_spider(self, spider):
