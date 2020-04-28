@@ -21,7 +21,8 @@ class ArticleItem(scrapy.Item):
     url = scrapy.Field()  # all sites
     title = scrapy.Field()  # all sites
     subtitle = scrapy.Field()  # sciencedaily, livescience
-    date = scrapy.Field()  # all TODO: currently string, change processor to Date format in subclasses per site format
+    author = scrapy.Field()
+    date = scrapy.Field()  # all
     source = scrapy.Field()  # optional in sciencedaily, sciencealert
     source_article_url = scrapy.Field()  # optional in sciencedaily, sciencealert TODO:
     summary = scrapy.Field()  # sciencedaily
@@ -33,14 +34,14 @@ class ArticleLoader(ItemLoader):
     default_output_processor = TakeFirst()
     default_input_processor = MapCompose(remove_tags, str.strip)
     url_in = Identity()
-    # tags_out = Identity()
 
 
 class ScienceDailyArticleLoader(ArticleLoader):
-    content_in = Compose(Join(),
-                         lambda x: remove_tags_with_content(x, ('div',)),  # there's "div"s for advertisements
-                         remove_tags,
-                         str.strip, )
+    content_in = Compose(
+        Join(),
+        lambda x: remove_tags_with_content(x, ('div',)),  # there's "div"s for advertisements
+        remove_tags,
+        str.strip, )
 
     date_out = Compose(
         TakeFirst(),
@@ -67,13 +68,27 @@ class LiveScienceArticleLoader(ArticleLoader):
 
 class ScienceAlertLoader(ArticleLoader):
     # FIXME: not sure about removing <span> with content. is it only used when putting image in content?
-    content_in = Compose(MapCompose(lambda x: remove_tags_with_content(x, 'div', 'span'),
-                                    remove_tags,
-                                    remove_unicode_whitespaces,
-                                    str.strip),
-                         DropLast(),  # last p is about source article
-                         Join(), )
+    content_in = Compose(
+        MapCompose(lambda x: remove_tags_with_content(x, 'div', 'span'),
+                   remove_tags,
+                   remove_unicode_whitespaces,
+                   str.strip),
+        DropLast(),  # last p is about source article
+        Join(), )
 
     date_out = Compose(  # sciencealert format: 3 FEBRUARY 2020
         TakeFirst(),
         lambda date_str: datetime.strptime(date_str, "%d %B %Y"), )
+
+
+class ScientificAmericanLoader(ArticleLoader):
+    content_in = Compose(
+        Join(),
+        remove_tags,
+        str.strip,
+    )
+
+    date_out = Compose(
+        TakeFirst(),
+        lambda date_str: datetime.strptime(date_str, "%B %d, %Y")
+    )
