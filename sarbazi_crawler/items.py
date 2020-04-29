@@ -80,6 +80,12 @@ class ScienceAlertLoader(ArticleLoader):
         TakeFirst(),
         lambda date_str: datetime.strptime(date_str, "%d %B %Y"), )
 
+    author_in = MapCompose(
+        remove_tags,
+        str.strip,
+        lambda author_str: author_str[:author_str.index(',')] if ',' in author_str else author_str
+    )
+
 
 class ScientificAmericanLoader(ArticleLoader):
     content_in = Compose(

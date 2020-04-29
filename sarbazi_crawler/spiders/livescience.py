@@ -32,7 +32,8 @@ class ScienceDailySpider(Spider):
         article_loader.add_xpath('title', "//header/h1")
         article_loader.add_css('subtitle', "header p.strapline")
 
-        article_loader.add_xpath('date', "//header//time/@datetime")  # TODO: extract date in 'Item' with @datetime
+        article_loader.add_xpath('date', "//header//time/@datetime")
+        article_loader.add_css('author', "header span.by-author a > span")
 
         # TODO: source info
         # livescience are mostly originally published in livescience; those not, don't refer to exact source link.

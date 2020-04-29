@@ -38,10 +38,13 @@ class ScienceDailySpider(Spider):
         # https://www.sciencealert.com/us-life-expectancy-just-increased-for-the-first-time-in-4-years
         # So in these cases we pick second 'author-name-name'
         if len(response.css("div.author-name-date span")) == 1:
-            css_sel = "div.author-name-date span"
+            author_css = "div.author-name-name span"
+            date_css = "div.author-name-date span"
         else:
-            css_sel = "div.author-name-name:last-child span"
-        article_loader.add_css('date', css_sel)
+            author_css = "div.author-name-name:first-child span"
+            date_css = "div.author-name-name:last-child span"
+        article_loader.add_css('date', date_css)
+        article_loader.add_css('author', author_css)  # cases of 'author, corporation' handled in related item loader
 
         body_loader = article_loader.nested_css("div.article-fulltext")
         body_loader.add_css('content', "p")  # <p>s are joined in related 'Item Loader'
