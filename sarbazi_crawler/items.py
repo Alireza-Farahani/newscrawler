@@ -94,6 +94,12 @@ class ScientificAmericanLoader(ArticleLoader):
         str.strip,
     )
 
+    author_in = MapCompose(
+        remove_tags,
+        str.strip,
+        lambda author_str: author_str[:author_str.index(',')] if ',' in author_str else author_str
+    )
+
     date_out = Compose(
         TakeFirst(),
         lambda date_str: datetime.strptime(date_str, "%B %d, %Y")
