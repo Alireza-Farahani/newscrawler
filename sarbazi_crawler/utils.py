@@ -23,6 +23,10 @@ class DropLast(object):
 
 def remove_unicode_whitespaces(value: str):
     return value.replace('\xa0', '')
+
+
+def remove_newlines(value: str):
+    return value.replace('\n', '')
 # class TakeLast(object):
 #
 #     def __call__(self, values: Iterable):

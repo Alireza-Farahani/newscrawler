@@ -14,7 +14,7 @@ from w3lib.html import remove_tags, remove_tags_with_content
 # TODO: base item, having an id to be checked in DuplicatePipeline. For example 'url' could be id for Articles
 # class BaseItem(scrapy.Item)
 # class Article(BaseItem)
-from sarbazi_crawler.utils import DropLast, remove_unicode_whitespaces
+from sarbazi_crawler.utils import DropLast, remove_unicode_whitespaces, remove_newlines
 
 
 class ArticleItem(scrapy.Item):
@@ -38,7 +38,7 @@ class ArticleLoader(ItemLoader):
 
 class ScienceDailyArticleLoader(ArticleLoader):
     content_in = Compose(
-        Join(),
+        Join('\n\n'),
         lambda x: remove_tags_with_content(x, ('div',)),  # there's "div"s for advertisements
         remove_tags,
         str.strip, )
@@ -58,7 +58,7 @@ class LiveScienceArticleLoader(ArticleLoader):
                    remove_unicode_whitespaces,
                    str.strip, ),
         DropLast(),  # last p not related to article body (mostly 'Originally published in LIVESCIENCE')
-        Join(), )
+        Join('\n\n'), )
 
     date_out = Compose(
         TakeFirst(),
@@ -74,7 +74,7 @@ class ScienceAlertLoader(ArticleLoader):
                    remove_unicode_whitespaces,
                    str.strip),
         DropLast(),  # last p is about source article
-        Join(), )
+        Join('\n\n'), )
 
     author_in = MapCompose(
         remove_tags,
@@ -89,7 +89,7 @@ class ScienceAlertLoader(ArticleLoader):
 
 class ScientificAmericanLoader(ArticleLoader):
     content_in = Compose(
-        Join(),
+        Join('\n\n'),
         remove_tags,
         str.strip,
     )
@@ -108,9 +108,12 @@ class ScientificAmericanLoader(ArticleLoader):
 
 class ScienceNewsLoader(ArticleLoader):
     content_in = Compose(
-        Join(),
+        MapCompose(
+            remove_newlines,
+            str.strip
+        ),
+        Join('\n\n'),
         remove_tags,
-        str.strip,
     )
 
     date_out = Compose(
