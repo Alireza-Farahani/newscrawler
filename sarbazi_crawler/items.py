@@ -76,15 +76,15 @@ class ScienceAlertLoader(ArticleLoader):
         DropLast(),  # last p is about source article
         Join(), )
 
-    date_out = Compose(  # sciencealert format: 3 FEBRUARY 2020
-        TakeFirst(),
-        lambda date_str: datetime.strptime(date_str, "%d %B %Y"), )
-
     author_in = MapCompose(
         remove_tags,
         str.strip,
         lambda author_str: author_str[:author_str.index(',')] if ',' in author_str else author_str
     )
+
+    date_out = Compose(  # sciencealert format: 3 FEBRUARY 2020
+        TakeFirst(),
+        lambda date_str: datetime.strptime(date_str, "%d %B %Y"), )
 
 
 class ScientificAmericanLoader(ArticleLoader):
@@ -103,4 +103,17 @@ class ScientificAmericanLoader(ArticleLoader):
     date_out = Compose(
         TakeFirst(),
         lambda date_str: datetime.strptime(date_str, "%B %d, %Y")
+    )
+
+
+class ScienceNewsLoader(ArticleLoader):
+    content_in = Compose(
+        Join(),
+        remove_tags,
+        str.strip,
+    )
+
+    date_out = Compose(
+        TakeFirst(),
+        lambda iso_date: datetime.fromisoformat(iso_date),
     )
