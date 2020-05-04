@@ -29,10 +29,10 @@ class ScienceDailySpider(Spider):
         # see nesting loaders https://docs.scrapy.org/en/latest/topics/loaders.html#nested-loaders
         article_loader = loader.nested_xpath("//div[@id='main']/article")
 
-        article_loader.add_xpath('title', "//header/h1")
+        article_loader.add_xpath('title', ".//header/h1")
         article_loader.add_css('subtitle', "header p.strapline")
 
-        article_loader.add_xpath('date', "//header//time/@datetime")
+        article_loader.add_xpath('date', ".//header//time/@datetime")
         article_loader.add_css('author', "header span.by-author a > span")
 
         # TODO: source info
