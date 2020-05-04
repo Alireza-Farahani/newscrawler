@@ -36,18 +36,6 @@ class ArticleLoader(ItemLoader):
     url_in = Identity()
 
 
-class ScienceDailyArticleLoader(ArticleLoader):
-    content_in = Compose(
-        Join('\n\n'),
-        lambda x: remove_tags_with_content(x, ('div',)),  # there's "div"s for advertisements
-        remove_tags,
-        str.strip, )
-
-    date_out = Compose(
-        TakeFirst(),
-        lambda date_str: datetime.strptime(date_str, "%B %d, %Y"), )
-
-
 class LiveScienceArticleLoader(ArticleLoader):
     # Fixme: what to do with 'Update on data' lines?
     # returning None drops that scraped item. see https://docs.scrapy.org/en/latest/topics/loaders.html
@@ -56,7 +44,8 @@ class LiveScienceArticleLoader(ArticleLoader):
                    lambda x: None if "<em>[" in x else x,  # signup for source newsletter
                    remove_tags,
                    remove_unicode_whitespaces,
-                   str.strip, ),
+                   str.strip,
+                   lambda x: None if x == '' else x, ),
         DropLast(),  # last p not related to article body (mostly 'Originally published in LIVESCIENCE')
         Join('\n\n'), )
 
@@ -87,6 +76,34 @@ class ScienceAlertLoader(ArticleLoader):
         lambda date_str: datetime.strptime(date_str, "%d %B %Y"), )
 
 
+class ScienceDailyArticleLoader(ArticleLoader):
+    content_in = Compose(
+        Join('\n\n'),
+        lambda x: remove_tags_with_content(x, ('div',)),  # there's "div"s for advertisements
+        remove_tags,
+        str.strip, )
+
+    date_out = Compose(
+        TakeFirst(),
+        lambda date_str: datetime.strptime(date_str, "%B %d, %Y"), )
+
+
+class ScienceNewsLoader(ArticleLoader):
+    content_in = Compose(
+        MapCompose(
+            remove_newlines,
+            str.strip
+        ),
+        Join('\n\n'),
+        remove_tags,
+    )
+
+    date_out = Compose(
+        TakeFirst(),
+        lambda iso_date: datetime.fromisoformat(iso_date),
+    )
+
+
 class ScientificAmericanLoader(ArticleLoader):
     content_in = Compose(
         Join('\n\n'),
@@ -103,20 +120,4 @@ class ScientificAmericanLoader(ArticleLoader):
     date_out = Compose(
         TakeFirst(),
         lambda date_str: datetime.strptime(date_str, "%B %d, %Y")
-    )
-
-
-class ScienceNewsLoader(ArticleLoader):
-    content_in = Compose(
-        MapCompose(
-            remove_newlines,
-            str.strip
-        ),
-        Join('\n\n'),
-        remove_tags,
-    )
-
-    date_out = Compose(
-        TakeFirst(),
-        lambda iso_date: datetime.fromisoformat(iso_date),
     )

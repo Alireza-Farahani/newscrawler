@@ -27,12 +27,12 @@ class ScienceDailySpider(Spider):
 
         # see nesting selectors https://docs.scrapy.org/en/latest/topics/selectors.html#working-with-relative-xpaths
         # see nesting loaders https://docs.scrapy.org/en/latest/topics/loaders.html#nested-loaders
-        article_loader = loader.nested_xpath("//div[@id='main']/article")
+        article_loader = loader.nested_css("div#main article")
 
-        article_loader.add_xpath('title', ".//header/h1")
+        article_loader.add_css('title', "header h1")
         article_loader.add_css('subtitle', "header p.strapline")
 
-        article_loader.add_xpath('date', ".//header//time/@datetime")
+        article_loader.add_css('date', "header time::attr(datetime)")
         article_loader.add_css('author', "header span.by-author a > span")
 
         # TODO: source info
@@ -40,5 +40,5 @@ class ScienceDailySpider(Spider):
         # livescience articles haven't summary, sth like sciencedaily
 
         # <p>s are joined and filtered in related 'Item Loader'
-        loader.add_xpath('content', "//div[@id='article-body']/p")
+        loader.add_css('content', "div#article-body > p")
         yield loader.load_item()

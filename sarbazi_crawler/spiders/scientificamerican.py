@@ -16,7 +16,7 @@ class ScientificAmerican(Spider):
     ]
 
     def parse(self, response: TextResponse):
-        sub_topics = response.xpath('//*[@id="topic-list"]//a/@href').getall()
+        sub_topics = response.css('#topic-list a::attr(href)').getall()
         for link in sub_topics:
             # SA lists all type including video and podcast. We do a filtering like what website does for articles only.
             yield FormRequest(link, formdata={'source': 'article'}, callback=self.parse_subtopic)
@@ -38,20 +38,20 @@ class ScientificAmerican(Spider):
             # yield self.parse_feature_article(loader)
 
     def parse_normal_article(self, loader):
-        article_header_loader: ItemLoader = loader.nested_xpath('//*[@id="sa_body"]//article//header')
+        article_header_loader: ItemLoader = loader.nested_css('#sa_body article header')
         article_header_loader.add_css('title', '.t_article-title')
         article_header_loader.add_css('subtitle', '.t_article-subtitle')
-        article_header_loader.add_xpath('author', './/span[@itemprop="author"]//a')
-        article_header_loader.add_xpath('date', './/*[@itemprop="datePublished"]')
-        article_body_loader: ItemLoader = loader.nested_xpath('//*[@id="sa_body"]//article//section')
+        article_header_loader.add_css('author', 'span[itemprop="author"] a')
+        article_header_loader.add_css('date', '*[itemprop="datePublished"]')
+        article_body_loader: ItemLoader = loader.nested_css('#sa_body article section')
         article_body_loader.add_css('content', 'div.mura-region-local > p')
         return loader.load_item()
 
     def parse_feature_article(self, loader):
         article_header_loader: ItemLoader = loader.nested_css('.feature-article--header')
-        article_header_loader.add_xpath('title', '//*[@itemprop="headline"]')
+        article_header_loader.add_css('title', '*[itemprop="headline"]')
         article_header_loader.add_css('subtitle', '.t_article-subtitle')
         loader.add_css('author', '.author-bio .tx_article-rightslink > strong > a')
-        article_header_loader.add_xpath('date', '//*[@itemprop="datePublished"]')
+        article_header_loader.add_css('date', '*[itemprop="datePublished"]')
 
         return loader.add_css('content', 'div.mura-region-local > p')

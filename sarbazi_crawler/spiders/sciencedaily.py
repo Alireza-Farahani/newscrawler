@@ -21,10 +21,10 @@ class ScienceDailySpider(Spider):
 
         # scrapy docs says use css selectors when selecting by tag/elements's class
         # https://docs.scrapy.org/en/latest/topics/selectors.html#when-querying-by-class-consider-using-css
-        top_headlines = response.css("div#heroes h3.latest-head a")
-        latest_headlines = response.xpath("//ul[@id='featured_shorts']//a")
-        earlier_headlines_segment = response.xpath("//div[@id='headlines']")
-        earlier_headlines = earlier_headlines_segment.xpath("./ul/li/a")
+        top_headlines = response.css('div#heroes h3.latest-head a')
+        latest_headlines = response.css('ul#featured_shorts a')
+        earlier_headlines_segment = response.css('div#headlines')
+        earlier_headlines = earlier_headlines_segment.css('ul > li > a')
         for link in chain(top_headlines, latest_headlines, earlier_headlines):
             yield response.follow(link, callback=self.parse_news)
 
@@ -38,18 +38,18 @@ class ScienceDailySpider(Spider):
         loader: ItemLoader = ScienceDailyArticleLoader(item=ArticleItem(), response=response)
         loader.add_value('url', response.url)
 
-        loader.add_xpath('title', "//h1[@id='headline']")
-        loader.add_xpath('subtitle', "//h2[@id='subtitle']")  # optional
+        loader.add_css('title', 'h1#headline')
+        loader.add_css('subtitle', 'h2#subtitle')  # optional
 
-        loader.add_xpath('date', "//dd[@id='date_posted']")  #
-        loader.add_xpath('source', "//dd[@id='source']")  #
-        loader.add_xpath('summary', "//dd[@id='abstract']")
+        loader.add_css('date', 'dd#date_posted')  #
+        loader.add_css('source', 'dd#source')  #
+        # loader.add_css('summary', 'dd#abstract') Fixme: I think it's add no value
 
-        loader.add_xpath('content', "//div[@id='text']/p")  # <p>s are joined in related 'Item Loader'
+        loader.add_css('content', 'div#text > p')  # <p>s are joined in related 'Item Loader'
 
         # see nesting selectors https://docs.scrapy.org/en/latest/topics/selectors.html#working-with-relative-xpaths
         # see nesting loaders https://docs.scrapy.org/en/latest/topics/loaders.html#nested-loaders
-        source_segment_loader = loader.nested_xpath("//div[@id='story_source']/p[2]")
+        source_segment_loader = loader.nested_css('div#story_source > p:nth-child(2)')
         source_segment_loader.add_xpath('source_article_url', "./a[contains(text(), 'Materials')]/@href")  # optional
 
         yield loader.load_item()
