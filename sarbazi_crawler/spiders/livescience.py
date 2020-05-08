@@ -1,10 +1,10 @@
 from scrapy import Spider
 from scrapy.loader import ItemLoader
 
-from sarbazi_crawler.items import ArticleItem, ArticleLoader, LiveScienceArticleLoader
+from sarbazi_crawler.items import ArticleItem, LiveScienceArticleLoader
 
 
-class ScienceDailySpider(Spider):
+class LiveScienceSpider(Spider):
     name = 'livescience'
     allowed_domains = ['livescience.com']
     start_urls = [
@@ -20,8 +20,6 @@ class ScienceDailySpider(Spider):
 
     # noinspection PyMethodMayBeStatic
     def parse_news(self, response):
-        # article = response.xpath("//div[@id='main']/article")
-
         loader: ItemLoader = LiveScienceArticleLoader(item=ArticleItem(), response=response)
         loader.add_value('url', response.url)
 

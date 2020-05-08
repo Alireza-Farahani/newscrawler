@@ -42,9 +42,9 @@ class LiveScienceArticleLoader(ArticleLoader):
     content_in = Compose(
         MapCompose(lambda x: None if "<strong>Related" in x else x,  # related posts
                    lambda x: None if "<em>[" in x else x,  # signup for source newsletter
-                   remove_tags,
+                   lambda x: None if "<strong>Read more:" in x else x,  # related post
                    remove_unicode_whitespaces,
-                   str.strip,
+                   ArticleLoader.default_input_processor,
                    lambda x: None if x == '' else x, ),
         DropLast(),  # last p not related to article body (mostly 'Originally published in LIVESCIENCE')
         Join('\n\n'), )
@@ -59,15 +59,13 @@ class ScienceAlertLoader(ArticleLoader):
     # FIXME: not sure about removing <span> with content. is it only used when putting image in content?
     content_in = Compose(
         MapCompose(lambda x: remove_tags_with_content(x, 'div', 'span'),
-                   remove_tags,
                    remove_unicode_whitespaces,
-                   str.strip),
+                   ArticleLoader.default_input_processor),
         DropLast(),  # last p is about source article
         Join('\n\n'), )
 
     author_in = MapCompose(
-        remove_tags,
-        str.strip,
+        ArticleLoader.default_input_processor,
         lambda author_str: author_str[:author_str.index(',')] if ',' in author_str else author_str
     )
 
@@ -80,8 +78,8 @@ class ScienceDailyArticleLoader(ArticleLoader):
     content_in = Compose(
         Join('\n\n'),
         lambda x: remove_tags_with_content(x, ('div',)),  # there's "div"s for advertisements
-        remove_tags,
-        str.strip, )
+        ArticleLoader.default_input_processor,
+    )
 
     date_out = Compose(
         TakeFirst(),
@@ -92,10 +90,9 @@ class ScienceNewsLoader(ArticleLoader):
     content_in = Compose(
         MapCompose(
             remove_newlines,
-            str.strip
+            ArticleLoader.default_input_processor
         ),
         Join('\n\n'),
-        remove_tags,
     )
 
     date_out = Compose(
@@ -106,14 +103,12 @@ class ScienceNewsLoader(ArticleLoader):
 
 class ScientificAmericanLoader(ArticleLoader):
     content_in = Compose(
+        ArticleLoader.default_input_processor,
         Join('\n\n'),
-        remove_tags,
-        str.strip,
     )
 
     author_in = MapCompose(
-        remove_tags,
-        str.strip,
+        ArticleLoader.default_input_processor,
         lambda author_str: author_str[:author_str.index(',')] if ',' in author_str else author_str
     )
 
