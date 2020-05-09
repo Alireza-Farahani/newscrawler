@@ -34,7 +34,7 @@ class ScienceAlertSpider(Spider):
         article_loader = loader.nested_css("div.main-article")
         article_loader.add_css('title', "h1")
 
-        article_loader = self.parse_author_date(article_loader)
+        self.parse_author_date(article_loader)
 
         body_loader = article_loader.nested_css("div.article-fulltext")
         body_loader.add_css('content', "p")  # <p>s are joined in related 'Item Loader'
@@ -44,7 +44,7 @@ class ScienceAlertSpider(Spider):
 
         yield loader.load_item()
 
-    def parse_author_date(self, loader: ScienceAlertLoader) -> ScienceAlertLoader:
+    def parse_author_date(self, loader: ScienceAlertLoader) -> None:
         # TODO: some articles have date in div.author-name-name! e.g.
         # https://www.sciencealert.com/us-life-expectancy-just-increased-for-the-first-time-in-4-years
         # So in these cases we pick second 'author-name-name'
@@ -56,4 +56,3 @@ class ScienceAlertSpider(Spider):
             date_css = "div.author-name-name:last-child span"
         loader.add_css('date', date_css)
         loader.add_css('author', author_css)  # cases of 'author, corporation' handled in related item loader
-        return loader

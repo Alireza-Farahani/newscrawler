@@ -14,7 +14,8 @@ from w3lib.html import remove_tags, remove_tags_with_content
 # TODO: base item, having an id to be checked in DuplicatePipeline. For example 'url' could be id for Articles
 # class BaseItem(scrapy.Item)
 # class Article(BaseItem)
-from sarbazi_crawler.utils import DropLast, remove_unicode_whitespaces, remove_newlines
+from sarbazi_crawler.utils import DropLast, remove_unicode_whitespaces
+from utils import Replace
 
 
 class ArticleItem(scrapy.Item):
@@ -52,7 +53,7 @@ class LiveScienceArticleLoader(ArticleLoader):
     date_out = Compose(
         TakeFirst(),
         lambda iso_date: iso_date.replace("Z", "+00:00"),  # https://stackoverflow.com/q/19654578/1660013
-        lambda iso_date: datetime.fromisoformat(iso_date), )
+        lambda iso_date: datetime.fromisoformat(iso_date).date(), )
 
 
 class ScienceAlertLoader(ArticleLoader):
@@ -73,7 +74,7 @@ class ScienceAlertLoader(ArticleLoader):
 
     date_out = Compose(  # sciencealert format: 3 FEBRUARY 2020
         TakeFirst(),
-        lambda date_str: datetime.strptime(date_str, "%d %B %Y"), )
+        lambda date_str: datetime.strptime(date_str, "%d %B %Y").date(), )
 
 
 class ScienceDailyArticleLoader(ArticleLoader):
@@ -85,13 +86,13 @@ class ScienceDailyArticleLoader(ArticleLoader):
 
     date_out = Compose(
         TakeFirst(),
-        lambda date_str: datetime.strptime(date_str, "%B %d, %Y"), )
+        lambda date_str: datetime.strptime(date_str, "%B %d, %Y").date(), )
 
 
 class ScienceNewsLoader(ArticleLoader):
     content_in = Compose(
         MapCompose(
-            remove_newlines,
+            Replace("\n", " "),  # sometimes SN inserts new line instead of space. Extra space is better than new line.
             ArticleLoader.default_input_processor
         ),
         Join('\n\n'),
@@ -99,7 +100,7 @@ class ScienceNewsLoader(ArticleLoader):
 
     date_out = Compose(
         TakeFirst(),
-        lambda iso_date: datetime.fromisoformat(iso_date),
+        lambda iso_date: datetime.fromisoformat(iso_date).date(),
     )
 
 
@@ -116,5 +117,5 @@ class ScientificAmericanLoader(ArticleLoader):
 
     date_out = Compose(
         TakeFirst(),
-        lambda date_str: datetime.strptime(date_str, "%B %d, %Y")
+        lambda date_str: datetime.strptime(date_str, "%B %d, %Y").date()
     )

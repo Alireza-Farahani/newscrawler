@@ -28,9 +28,16 @@ class ScienceNewsSpider(Spider):
         header_loader.add_css('title', 'h1')
         header_loader.add_css('subtitle', 'h2')
 
+        self.parse_author_date(loader)
+
+        loader.add_css('content', 'main#content .content .rich-text > p')
+
+        yield loader.load_item()
+
+    def parse_author_date(self, loader: ScienceNewsLoader):
         # column article have different layout.
         # e.g. https://www.sciencenews.org/article/will-to-survive-might-take-artificial-intelligence-next-level
-        if len(response.css('main#content article header.is-column')) > 0:
+        if len(loader.get_css('main#content article header.is-column')) > 0:
             author_date_container = 'main#content article header *[class*="column-meta"] '
             author_css = author_date_container + '*[class*="heading"] a'
             date_css = author_date_container + '*[class*="timestamp"] time::attr(datetime)'
@@ -39,7 +46,3 @@ class ScienceNewsSpider(Spider):
             date_css = 'time.date::attr(datetime)'
         loader.add_css('date', date_css)
         loader.add_css('author', author_css)
-
-        loader.add_css('content', 'main#content .content .rich-text > p')
-
-        yield loader.load_item()

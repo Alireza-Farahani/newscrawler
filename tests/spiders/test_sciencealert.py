@@ -1,5 +1,5 @@
 import unittest
-from datetime import datetime
+from datetime import date
 
 from items import ScienceAlertLoader, ArticleItem
 from spiders.sciencealert import ScienceAlertSpider
@@ -9,11 +9,11 @@ from tests.utils import fake_response, fake_response_by_body
 # TODO: parameterize test for multiple article
 
 
-class ScienceAlertTest(unittest.TestCase):
+class TestScienceAlertSpider(unittest.TestCase):
     def setUp(self) -> None:
         self.spider = ScienceAlertSpider()
 
-    def test_livescience_parse_news(self):
+    def test_parse_news(self):
         # response fetched from https://www.sciencealert.com/a-physician-answers-5-questions-about-asymptomatic-covid-19
         response = fake_response('sciencealert-example.html')
         item = next(self.spider.parse_news(response))
@@ -21,7 +21,7 @@ class ScienceAlertTest(unittest.TestCase):
         self.assertEqual(item['title'],
                          "Could You Be an Asymptomatic COVID-19 Carrier? Here's What You Need to Know", )
         self.assertEqual(item['date'],  # 1 MAY 2020
-                         datetime(2020, 5, 1, 0, 0, 0))
+                         date(2020, 5, 1))
         self.assertEqual(item['author'],
                          'William Petri')
 
@@ -40,7 +40,7 @@ class ScienceAlertTest(unittest.TestCase):
                          r"and preliminary findings suggest that many people have been infected without knowing it.")
 
     # TODO: single parameterize test for both author_date formats
-    def test_author_date_format1(self):
+    def test_parse_author_date_format1(self):
         response = fake_response_by_body("""
         <div class="author-name">
             <div class="author-name-text">
@@ -53,13 +53,13 @@ class ScienceAlertTest(unittest.TestCase):
             </div>
         </div>""")
         loader = ScienceAlertLoader(item=ArticleItem(), response=response)
-        spider = ScienceAlertSpider()
-        item = spider.parse_author_date(loader).load_item()
+        self.spider.parse_author_date(loader)
+        item = loader.load_item()
 
         self.assertEqual(item['author'], 'Amelie Bottollier-Depois')
-        self.assertEqual(item['date'], datetime(2020, 5, 7))
+        self.assertEqual(item['date'], date(2020, 5, 7))
 
-    def test_author_date_format2(self):
+    def test_parse_author_date_format2(self):
         response = fake_response_by_body("""
         <div class="author-name">
             <div class="author-name-text">
@@ -73,10 +73,11 @@ class ScienceAlertTest(unittest.TestCase):
         </div>
         """)
         loader = ScienceAlertLoader(item=ArticleItem(), response=response)
-        item = self.spider.parse_author_date(loader).load_item()
+        self.spider.parse_author_date(loader)
+        item = loader.load_item()
 
         self.assertEqual(item['author'], 'Peter Ellis')
-        self.assertEqual(item['date'], datetime(2020, 5, 8))
+        self.assertEqual(item['date'], date(2020, 5, 8))
 
 
 if __name__ == '__main__':

@@ -21,12 +21,18 @@ class DropLast(object):
         return values[:-1]
 
 
+class Replace(object):
+    def __init__(self, old, new):
+        self.old = old
+        self.new = new
+
+    def __call__(self, value: str):
+        return value.replace(self.old, self.new)
+
+
 def remove_unicode_whitespaces(value: str):
-    return value.replace('\xa0', '')
+    return Replace('\xa0', '')(value)
 
-
-def remove_newlines(value: str):
-    return value.replace('\n', '')
 # class TakeLast(object):
 #
 #     def __call__(self, values: Iterable):
