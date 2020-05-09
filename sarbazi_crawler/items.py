@@ -45,7 +45,7 @@ class LiveScienceArticleLoader(ArticleLoader):
                    lambda x: None if "<strong>Read more:" in x else x,  # related post
                    remove_unicode_whitespaces,
                    ArticleLoader.default_input_processor,
-                   lambda x: None if x == '' else x, ),
+                   lambda x: None if x == '' else x, ),  # there are some empty paragraphs
         DropLast(),  # last p not related to article body (mostly 'Originally published in LIVESCIENCE')
         Join('\n\n'), )
 

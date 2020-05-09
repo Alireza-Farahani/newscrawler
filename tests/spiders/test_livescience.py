@@ -11,7 +11,8 @@ class LiveScienceTest(unittest.TestCase):
         self.spider = LiveScienceSpider()
 
     def test_livescience_parse_news(self):
-        response = fake_response('livescience-fake.html')
+        # response fetched from https://www.livescience.com/5g-coronavirus-conspiracy-theory-debunked.html
+        response = fake_response('livescience-example.html')
         item = next(self.spider.parse_news(response))
         self.assertEqual(item['title'],
                          "5G is not linked to the coronavirus pandemic in any way. Here's the science.", )

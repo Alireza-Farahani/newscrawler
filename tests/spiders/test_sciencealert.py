@@ -9,13 +9,15 @@ from tests.utils import fake_response, fake_response_by_body
 # TODO: parameterize test for multiple article
 
 
-class LiveScienceTest(unittest.TestCase):
+class ScienceAlertTest(unittest.TestCase):
     def setUp(self) -> None:
         self.spider = ScienceAlertSpider()
 
     def test_livescience_parse_news(self):
-        response = fake_response('sciencealert-fake.html')
+        # response fetched from https://www.sciencealert.com/a-physician-answers-5-questions-about-asymptomatic-covid-19
+        response = fake_response('sciencealert-example.html')
         item = next(self.spider.parse_news(response))
+
         self.assertEqual(item['title'],
                          "Could You Be an Asymptomatic COVID-19 Carrier? Here's What You Need to Know", )
         self.assertEqual(item['date'],  # 1 MAY 2020
@@ -71,8 +73,7 @@ class LiveScienceTest(unittest.TestCase):
         </div>
         """)
         loader = ScienceAlertLoader(item=ArticleItem(), response=response)
-        spider = ScienceAlertSpider()
-        item = spider.parse_author_date(loader).load_item()
+        item = self.spider.parse_author_date(loader).load_item()
 
         self.assertEqual(item['author'], 'Peter Ellis')
         self.assertEqual(item['date'], datetime(2020, 5, 8))
