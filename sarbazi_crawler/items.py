@@ -59,6 +59,7 @@ class ScienceAlertLoader(ArticleLoader):
     # FIXME: not sure about removing <span> with content. is it only used when putting image in content?
     content_in = Compose(
         MapCompose(lambda x: remove_tags_with_content(x, 'div', 'span'),
+                   lambda x: None if x.startswith("<p><em><a") else x,  # authors info. possible FalsePositive?
                    remove_unicode_whitespaces,
                    ArticleLoader.default_input_processor),
         DropLast(),  # last p is about source article
@@ -66,7 +67,8 @@ class ScienceAlertLoader(ArticleLoader):
 
     author_in = MapCompose(
         ArticleLoader.default_input_processor,
-        lambda author_str: author_str[:author_str.index(',')] if ',' in author_str else author_str
+        lambda author_str: author_str[:author_str.index(',')] if ',' in author_str else author_str,
+        str.title  # 'WILLIAM PORTER' to 'William Porter'
     )
 
     date_out = Compose(  # sciencealert format: 3 FEBRUARY 2020
