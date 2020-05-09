@@ -4,7 +4,7 @@ from typing import List
 
 from items import ScienceNewsLoader, ArticleItem
 from spiders.sciencenews import ScienceNewsSpider
-from tests.utils import fake_response, fake_response_by_body
+from tests.utils import fake_response
 
 
 class TestScienceNewsSpider(unittest.TestCase):

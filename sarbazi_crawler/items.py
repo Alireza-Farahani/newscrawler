@@ -14,8 +14,7 @@ from w3lib.html import remove_tags, remove_tags_with_content
 # TODO: base item, having an id to be checked in DuplicatePipeline. For example 'url' could be id for Articles
 # class BaseItem(scrapy.Item)
 # class Article(BaseItem)
-from sarbazi_crawler.utils import DropLast, remove_unicode_whitespaces
-from utils import Replace
+from sarbazi_crawler.utils import DropLast, Replace, remove_unicode_whitespaces
 
 
 class ArticleItem(scrapy.Item):
@@ -106,7 +105,11 @@ class ScienceNewsLoader(ArticleLoader):
 
 class ScientificAmericanLoader(ArticleLoader):
     content_in = Compose(
-        ArticleLoader.default_input_processor,
+        MapCompose(
+            ArticleLoader.default_input_processor,
+            lambda x: None if x == '' else x,  # there are some empty paragraphs,
+            lambda x: None if 'Read more about' in x else x,  # drop link to other sources
+        ),
         Join('\n\n'),
     )
 

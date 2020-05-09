@@ -6,7 +6,7 @@ from scrapy.loader import ItemLoader
 from sarbazi_crawler.items import ScientificAmericanLoader, ArticleItem
 
 
-class ScientificAmerican(Spider):
+class ScientificAmericanSpider(Spider):
     name = 'scientificamerican'
     allowed_domains = ['scientificamerican.com']
     start_urls = [
@@ -26,18 +26,30 @@ class ScientificAmerican(Spider):
         yield from response.follow_all(articles, callback=self.parse_news, )  # meta={'dont_redirect': True}
 
     def parse_news(self, response: TextResponse):
+        if self.is_paid_article(response):
+            yield
+
         loader: ItemLoader = ScientificAmericanLoader(item=ArticleItem(), response=response)
         loader.add_value('url', response.url)
 
-        if len(response.css('.feature-article-wrapper')) == 0:
-            yield self.parse_normal_article(loader)
+        if not self.is_featured_article(response):
+            yield self.load_normal_article(loader)
         else:  # some featured articles have different layout e.g.
-            pass  # TODO recursive redirection when using scrapy
+            # TODO recursive redirection when using scrapy
             # https://www.scientificamerican.com/article/no-one-can-explain-why-planes-stay-in-the-air/
-            # print("---**------------ThErE!-----------**-")
-            # yield self.parse_feature_article(loader)
+            print("---**------------ThErE!-----------**-")
+            yield self.load_featured_article(loader)
 
-    def parse_normal_article(self, loader):
+    # noinspection PyMethodMayBeStatic
+    def is_paid_article(self, response: TextResponse):
+        return response.css("aside.paywall")
+
+    # noinspection PyMethodMayBeStatic
+    def is_featured_article(self, response: TextResponse):
+        return response.css('.feature-article-wrapper')
+
+    # noinspection PyMethodMayBeStatic
+    def load_normal_article(self, loader: ItemLoader) -> ArticleItem:
         article_header_loader: ItemLoader = loader.nested_css('#sa_body article header')
         article_header_loader.add_css('title', '.t_article-title')
         article_header_loader.add_css('subtitle', '.t_article-subtitle')
@@ -47,11 +59,13 @@ class ScientificAmerican(Spider):
         article_body_loader.add_css('content', 'div.mura-region-local > p')
         return loader.load_item()
 
-    def parse_feature_article(self, loader):
+    # noinspection PyMethodMayBeStatic
+    def load_featured_article(self, loader: ItemLoader) -> ArticleItem:
         article_header_loader: ItemLoader = loader.nested_css('.feature-article--header')
         article_header_loader.add_css('title', '*[itemprop="headline"]')
         article_header_loader.add_css('subtitle', '.t_article-subtitle')
         loader.add_css('author', '.author-bio .tx_article-rightslink > strong > a')
         article_header_loader.add_css('date', '*[itemprop="datePublished"]')
 
-        return loader.add_css('content', 'div.mura-region-local > p')
+        loader.add_css('content', 'div.mura-region-local > p')
+        return loader.load_item()

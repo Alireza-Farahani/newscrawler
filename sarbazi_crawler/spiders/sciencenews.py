@@ -27,13 +27,12 @@ class ScienceNewsSpider(Spider):
         header_loader = loader.nested_css('main#content article header')
         header_loader.add_css('title', 'h1')
         header_loader.add_css('subtitle', 'h2')
-
         self.parse_author_date(loader)
-
         loader.add_css('content', 'main#content .content .rich-text > p')
 
         yield loader.load_item()
 
+    # noinspection PyMethodMayBeStatic
     def parse_author_date(self, loader: ScienceNewsLoader):
         # column article have different layout.
         # e.g. https://www.sciencenews.org/article/will-to-survive-might-take-artificial-intelligence-next-level
