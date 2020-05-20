@@ -25,14 +25,13 @@ class ArticleItem(scrapy.Item):
     date = scrapy.Field()  # all
     source = scrapy.Field()  # optional in sciencedaily, sciencealert
     source_article_url = scrapy.Field()  # optional in sciencedaily, sciencealert TODO:
-    summary = scrapy.Field()  # sciencedaily
     content = scrapy.Field()  # all
     # category = scrapy.Field  # all TODO: how to know the category? only sciencealert has it per article
 
 
 class ArticleLoader(ItemLoader):
-    default_output_processor = TakeFirst()
     default_input_processor = MapCompose(remove_tags, str.strip)
+    default_output_processor = TakeFirst()
     url_in = Identity()
 
 
@@ -47,12 +46,14 @@ class LiveScienceArticleLoader(ArticleLoader):
                    ArticleLoader.default_input_processor,
                    lambda x: None if x == '' else x, ),  # there are some empty paragraphs
         DropLast(),  # last p not related to article body (mostly 'Originally published in LIVESCIENCE')
-        Join('\n\n'), )
+        Join('\n\n'),
+    )
 
     date_out = Compose(
         TakeFirst(),
         lambda iso_date: iso_date.replace("Z", "+00:00"),  # https://stackoverflow.com/q/19654578/1660013
-        lambda iso_date: datetime.fromisoformat(iso_date).date(), )
+        lambda iso_date: datetime.fromisoformat(iso_date).date(),
+    )
 
 
 class ScienceAlertLoader(ArticleLoader):
@@ -63,7 +64,8 @@ class ScienceAlertLoader(ArticleLoader):
                    remove_unicode_whitespaces,
                    ArticleLoader.default_input_processor),
         DropLast(),  # last p is about source article
-        Join('\n\n'), )
+        Join('\n\n'),
+    )
 
     author_in = MapCompose(
         ArticleLoader.default_input_processor,
@@ -73,7 +75,8 @@ class ScienceAlertLoader(ArticleLoader):
 
     date_out = Compose(  # sciencealert format: 3 FEBRUARY 2020
         TakeFirst(),
-        lambda date_str: datetime.strptime(date_str, "%d %B %Y").date(), )
+        lambda date_str: datetime.strptime(date_str, "%d %B %Y").date(),
+    )
 
 
 class ScienceDailyArticleLoader(ArticleLoader):
@@ -85,7 +88,8 @@ class ScienceDailyArticleLoader(ArticleLoader):
 
     date_out = Compose(
         TakeFirst(),
-        lambda date_str: datetime.strptime(date_str, "%B %d, %Y").date(), )
+        lambda date_str: datetime.strptime(date_str, "%B %d, %Y").date(),
+    )
 
 
 class ScienceNewsLoader(ArticleLoader):
@@ -105,11 +109,9 @@ class ScienceNewsLoader(ArticleLoader):
 
 class ScientificAmericanLoader(ArticleLoader):
     content_in = Compose(
-        MapCompose(
-            ArticleLoader.default_input_processor,
-            lambda x: None if x == '' else x,  # there are some empty paragraphs,
-            lambda x: None if 'Read more about' in x else x,  # drop link to other sources
-        ),
+        MapCompose(ArticleLoader.default_input_processor,
+                   lambda x: None if x == '' else x,  # there are some empty paragraphs,
+                   lambda x: None if 'Read more about' in x else x, ),  # drop link to other sources
         Join('\n\n'),
     )
 

@@ -15,11 +15,6 @@ class ScienceAlertSpider(Spider):
     ]
 
     def parse(self, response: Response):
-        # In Sciencedaily category pages, news link are separated in 3 segment:
-        # top headlines, latest headlines and earlier headlines. We need all of them to ensure we don't miss anything.
-
-        # scrapy docs says use css selectors when selecting by tag/elements's class
-        # https://docs.scrapy.org/en/latest/topics/selectors.html#when-querying-by-class-consider-using-css
         latest_news = response.css("div#rt-mainbody div.latestnews div.titletext a")
         for link in latest_news:
             yield response.follow(link, callback=self.parse_news)
@@ -45,7 +40,7 @@ class ScienceAlertSpider(Spider):
         yield loader.load_item()
 
     def parse_author_date(self, loader: ScienceAlertLoader) -> None:
-        # TODO: some articles have date in div.author-name-name! e.g.
+        # some articles have date in div.author-name-name! e.g.
         # https://www.sciencealert.com/us-life-expectancy-just-increased-for-the-first-time-in-4-years
         # So in these cases we pick second 'author-name-name'
         if len(loader.get_css("div.author-name-date span")) == 1:

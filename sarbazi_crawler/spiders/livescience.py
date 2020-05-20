@@ -8,12 +8,11 @@ class LiveScienceSpider(Spider):
     name = 'livescience'
     allowed_domains = ['livescience.com']
     start_urls = [
-        'https://www.livescience.com/technology/',
-        'https://www.livescience.com/health/',
+        'https://www.livescience.com/technology',
+        'https://www.livescience.com/health',
     ]
 
     def parse(self, response):
-        # scrapy docs says use css selectors when selecting by tag/elements's class
         latest_news = response.css("div#content section a.article-link")
         for link in latest_news:
             yield response.follow(link, callback=self.parse_news)
@@ -35,7 +34,6 @@ class LiveScienceSpider(Spider):
 
         # TODO: source info
         # livescience are mostly originally published in livescience; those not, don't refer to exact source link.
-        # livescience articles haven't summary, sth like sciencedaily
 
         # <p>s are joined and filtered in related 'Item Loader'
         loader.add_css('content', "div#article-body > p")

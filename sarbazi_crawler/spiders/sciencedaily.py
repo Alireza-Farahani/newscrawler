@@ -43,7 +43,6 @@ class ScienceDailySpider(Spider):
 
         loader.add_css('date', 'dd#date_posted')  #
         loader.add_css('source', 'dd#source')  #
-        # loader.add_css('summary', 'dd#abstract') Fixme: I think it's add no value
 
         loader.add_css('content', 'div#text > p')  # <p>s are joined in related 'Item Loader'
 

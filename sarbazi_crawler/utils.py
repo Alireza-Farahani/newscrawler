@@ -32,18 +32,3 @@ class Replace(object):
 
 def remove_unicode_whitespaces(value: str):
     return Replace('\xa0', '')(value)
-
-# class TakeLast(object):
-#
-#     def __call__(self, values: Iterable):
-#         for value in values:
-#             if value is not None and value != '':
-#                 return value
-
-# def is_iterable(obj) -> bool:
-#     try:
-#         iter(obj)
-#     except TypeError:
-#         return False
-#     else:
-#         return True

@@ -1,11 +1,11 @@
 from scrapy import Spider, FormRequest
 from scrapy.http import TextResponse
-# SA = scientific american
 from scrapy.loader import ItemLoader
 
 from sarbazi_crawler.items import ScientificAmericanLoader, ArticleItem
 
 
+# SA = scientific american
 class ScientificAmericanSpider(Spider):
     name = 'scientificamerican'
     allowed_domains = ['scientificamerican.com']
@@ -23,11 +23,11 @@ class ScientificAmericanSpider(Spider):
 
     def parse_subtopic(self, response: TextResponse):
         articles = response.css('div.panel div.section-latest h2 a')
-        yield from response.follow_all(articles, callback=self.parse_news, )  # meta={'dont_redirect': True}
+        yield from response.follow_all(articles, callback=self.parse_news, )
 
     def parse_news(self, response: TextResponse):
         if self.is_paid_article(response):
-            yield
+            yield  # spider callback MOST return either a generator or a dict/item like object
 
         loader: ItemLoader = ScientificAmericanLoader(item=ArticleItem(), response=response)
         loader.add_value('url', response.url)
