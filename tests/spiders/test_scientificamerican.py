@@ -1,6 +1,7 @@
 import unittest
 from datetime import date
 
+from scrapy import FormRequest
 from scrapy.http import TextResponse
 
 from items import ScientificAmericanLoader, ArticleItem
@@ -94,3 +95,22 @@ class TestScienceNewsSpider(unittest.TestCase):
 
         item = self.spider.parse_news(paid)
         self.assertIsNone(item, ArticleItem)
+
+    # -----------------------------------------------------------------------------------------
+    def test_parse_online(self):
+        response = real_response('https://www.scientificamerican.com/tech/')
+        self.assertGreaterEqual(len(list(self.spider.parse(response))), 5)  # tech segment has 7 subtopics
+
+    def test_parse_subtopic_online(self):
+        # I really don't know why these lines get time-out and the other line doesn't
+        # topic_page = real_response('https://www.scientificamerican.com/tech/')
+        # subtopic_request = list(self.spider.parse(topic_page))[2]
+        # response = real_response(subtopic_request)
+        response = real_response(FormRequest("https://www.scientificamerican.com/computing/",
+                                             formdata={'source': 'article'}))
+
+        self.assertGreaterEqual(len(list(self.spider.parse_subtopic(response))), 10)
+
+
+if __name__ == '__main__':
+    unittest.main()

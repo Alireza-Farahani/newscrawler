@@ -44,5 +44,5 @@ def _retry(n: int):
 @_retry(3)
 def real_response(url):
     scrapydo.setup()
-    resp: Response = scrapydo.fetch(url)
+    resp: Response = scrapydo.fetch(url, timeout=10)
     return resp if 200 <= resp.status < 300 else None

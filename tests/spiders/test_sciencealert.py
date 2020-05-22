@@ -86,6 +86,11 @@ class TestScienceAlertSpider(unittest.TestCase):
         self.assertEqual(item['author'], 'Peter Ellis')
         self.assertEqual(item['date'], date(2020, 5, 8))
 
+    # -----------------------------------------------------------------------------------------
+    def test_parse_online(self):
+        response = real_response('https://www.sciencealert.com')
+        self.assertGreaterEqual(len(list(self.spider.parse(response))), 10)
+
 
 if __name__ == '__main__':
     unittest.main()

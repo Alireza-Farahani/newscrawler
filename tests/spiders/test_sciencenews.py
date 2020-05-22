@@ -55,3 +55,12 @@ class TestScienceNewsSpider(unittest.TestCase):
 
         self.assertEqual(item['author'], 'Nancy Shute')
         self.assertEqual(item['date'], date(2020, 4, 19))
+
+    # -----------------------------------------------------------------------------------------
+    def test_parse_online(self):
+        response = real_response('https://www.sciencenews.org/topic/tech')
+        self.assertGreaterEqual(len(list(self.spider.parse(response))), 10)
+
+
+if __name__ == '__main__':
+    unittest.main()

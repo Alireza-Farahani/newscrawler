@@ -24,7 +24,7 @@ class ScienceDailySpider(Spider):
         top_headlines = response.css('div#heroes h3.latest-head a')
         latest_headlines = response.css('ul#featured_shorts a')
         earlier_headlines_segment = response.css('div#headlines')
-        earlier_headlines = earlier_headlines_segment.css('ul > li > a')
+        earlier_headlines = earlier_headlines_segment.css('ul > li > a')[:20]
         for link in chain(top_headlines, latest_headlines, earlier_headlines):
             yield response.follow(link, callback=self.parse_news)
 

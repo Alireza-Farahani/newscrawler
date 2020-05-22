@@ -11,7 +11,6 @@ class ScienceNewsSpider(Spider):
     allowed_domains = ['sciencenews.org']
     start_urls = [
         'https://www.sciencenews.org/topic/tech',
-        'https://www.sciencenews.org/topic/tech/page/2'
     ]
 
     def parse(self, response: TextResponse):

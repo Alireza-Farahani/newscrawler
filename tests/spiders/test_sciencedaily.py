@@ -43,3 +43,12 @@ class TestScienceDailySpider(unittest.TestCase):
             self.assertNotIn(word, content)
         self.assertEqual(len(content.split('\n\n')), 10)
         self.assertTrue(content.split('\n\n')[0].startswith('The study found that hospitalized COVID-19 patients'))
+
+    # -----------------------------------------------------------------------------------------
+    def test_parse_online(self):
+        response = real_response('https://www.sciencedaily.com/news/computers_math/')
+        self.assertGreaterEqual(len(list(self.spider.parse(response))), 34)  # ensuring all 3 segments are selected
+
+
+if __name__ == '__main__':
+    unittest.main()
