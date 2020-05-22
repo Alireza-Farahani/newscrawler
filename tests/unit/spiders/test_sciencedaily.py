@@ -4,20 +4,16 @@ from datetime import date
 from scrapy.http import TextResponse
 
 from spiders.sciencedaily import ScienceDailySpider
-from tests.utils import fake_response, real_response
+from tests.utils import fake_response
 
 
 class TestScienceDailySpider(unittest.TestCase):
     def setUp(self) -> None:
         self.spider = ScienceDailySpider()
 
-    def test_parse_news_offline(self):
+    def test_parse_news(self):
         # response fetched from https://www.sciencedaily.com/releases/2020/05/200507194907.htm
         response = fake_response('sciencedaily-example.html')
-        self._test_parse_news(response)
-
-    def test_parse_news_online(self):
-        response = real_response("https://www.sciencedaily.com/releases/2020/05/200507194907.htm")
         self._test_parse_news(response)
 
     def _test_parse_news(self, response: TextResponse):
@@ -43,11 +39,6 @@ class TestScienceDailySpider(unittest.TestCase):
             self.assertNotIn(word, content)
         self.assertEqual(len(content.split('\n\n')), 10)
         self.assertTrue(content.split('\n\n')[0].startswith('The study found that hospitalized COVID-19 patients'))
-
-    # -----------------------------------------------------------------------------------------
-    def test_parse_online(self):
-        response = real_response('https://www.sciencedaily.com/news/computers_math/')
-        self.assertGreaterEqual(len(list(self.spider.parse(response))), 34)  # ensuring all 3 segments are selected
 
 
 if __name__ == '__main__':

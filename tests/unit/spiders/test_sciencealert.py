@@ -5,7 +5,7 @@ from scrapy.http import TextResponse
 
 from items import ScienceAlertLoader, ArticleItem
 from spiders.sciencealert import ScienceAlertSpider
-from tests.utils import fake_response, fake_response_by_body, real_response
+from tests.utils import fake_response, fake_response_by_body
 
 
 # TODO: parameterize test for multiple article
@@ -13,13 +13,9 @@ class TestScienceAlertSpider(unittest.TestCase):
     def setUp(self) -> None:
         self.spider = ScienceAlertSpider()
 
-    def test_parse_news_offline(self):
+    def test_parse_news(self):
         # response fetched from https://www.sciencealert.com/a-physician-answers-5-questions-about-asymptomatic-covid-19
         response = fake_response('sciencealert-example.html')
-        self._test_parse_news(response)
-
-    def test_parse_news_online(self):
-        response = real_response("https://www.sciencealert.com/a-physician-answers-5-questions-about-asymptomatic-covid-19")
         self._test_parse_news(response)
 
     def _test_parse_news(self, response: TextResponse):
@@ -85,11 +81,6 @@ class TestScienceAlertSpider(unittest.TestCase):
 
         self.assertEqual(item['author'], 'Peter Ellis')
         self.assertEqual(item['date'], date(2020, 5, 8))
-
-    # -----------------------------------------------------------------------------------------
-    def test_parse_online(self):
-        response = real_response('https://www.sciencealert.com')
-        self.assertGreaterEqual(len(list(self.spider.parse(response))), 10)
 
 
 if __name__ == '__main__':

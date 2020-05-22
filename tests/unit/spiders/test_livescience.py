@@ -4,7 +4,7 @@ from datetime import date
 from scrapy.http import Response
 
 from spiders.livescience import LiveScienceSpider
-from tests.utils import fake_response, real_response
+from tests.utils import fake_response
 
 
 # TODO: parameterize test for multiple article
@@ -12,13 +12,9 @@ class TestLiveScienceSpider(unittest.TestCase):
     def setUp(self) -> None:
         self.spider = LiveScienceSpider()
 
-    def test_parse_news_offline(self):
+    def test_parse_news(self):
         # response fetched from https://www.livescience.com/5g-coronavirus-conspiracy-theory-debunked.html
         response = fake_response('livescience-example.html')
-        self._test_parse_news(response)
-
-    def test_parse_news_online(self):
-        response = real_response("https://www.livescience.com/5g-coronavirus-conspiracy-theory-debunked.html")
         self._test_parse_news(response)
 
     def _test_parse_news(self, response: Response):
@@ -43,11 +39,6 @@ class TestLiveScienceSpider(unittest.TestCase):
                      ):
             self.assertNotIn(word, content)
         self.assertEqual(len(content.split('\n\n')), 25)
-
-    # -----------------------------------------------------------------------------------------
-    def test_parse_online(self):
-        response = real_response('https://www.livescience.com')
-        self.assertGreaterEqual(len(list(self.spider.parse(response))), 10)
 
 
 if __name__ == '__main__':

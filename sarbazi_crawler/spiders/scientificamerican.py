@@ -26,20 +26,20 @@ class ScientificAmericanSpider(Spider):
         yield from response.follow_all(articles, callback=self.parse_news, )
 
     def parse_news(self, response: TextResponse):
+        # TODO: maybe updating 'stats'
         if self.is_paid_article(response):
-            # TODO: maybe updating 'stats'
-            return  # spider callback MOST return either a generator or a dict/item like object
+            yield  # spider callback MOST return either a generator or a dict/item like object
+        else:
+            loader: ItemLoader = ScientificAmericanLoader(item=ArticleItem(), response=response)
+            loader.add_value('url', response.url)
 
-        loader: ItemLoader = ScientificAmericanLoader(item=ArticleItem(), response=response)
-        loader.add_value('url', response.url)
-
-        if not self.is_featured_article(response):
-            yield self.load_normal_article(loader)
-        else:  # some featured articles have different layout e.g.
-            # TODO recursive redirection when using scrapy
-            # https://www.scientificamerican.com/article/no-one-can-explain-why-planes-stay-in-the-air/
-            print("---**------------ThErE!-----------**-")
-            yield self.load_featured_article(loader)
+            if not self.is_featured_article(response):
+                yield self.load_normal_article(loader)
+            else:  # some featured articles have different layout e.g.
+                # TODO recursive redirection when using scrapy
+                # https://www.scientificamerican.com/article/no-one-can-explain-why-planes-stay-in-the-air/
+                print("---**------------ThErE!-----------**-")
+                yield self.load_featured_article(loader)
 
     # noinspection PyMethodMayBeStatic
     def is_paid_article(self, response: TextResponse):
