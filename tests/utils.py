@@ -1,6 +1,9 @@
+import functools
 import os
+from typing import Any
 
-from scrapy.http import TextResponse
+import scrapydo
+from scrapy.http import TextResponse, Response
 
 from definitions import TEST_RESOURCES_DIR
 
@@ -21,3 +24,25 @@ def fake_response_by_body(body: str, url="https://fake_response.com"):
     :param body: response body. Any valid html is acceptable
     """
     return TextResponse(url=url, body=body, encoding='utf-8')
+
+
+def _retry(n: int):
+    def retry_decorator(func):
+        @functools.wraps(func)
+        def function_wrapper(*args, **kwargs):
+            for i in range(n):
+                result = func(*args, **kwargs)
+                if result:
+                    return result
+            raise ValueError(f'Cannot obtain a valid value after {n} tries.')
+
+        return function_wrapper
+
+    return retry_decorator
+
+
+@_retry(3)
+def real_response(url):
+    scrapydo.setup()
+    resp: Response = scrapydo.fetch(url)
+    return resp if 200 <= resp.status < 300 else None

@@ -1,21 +1,28 @@
 import unittest
 from datetime import date
 
+from scrapy.http import TextResponse
+
 from items import ScienceAlertLoader, ArticleItem
 from spiders.sciencealert import ScienceAlertSpider
-from tests.utils import fake_response, fake_response_by_body
+from tests.utils import fake_response, fake_response_by_body, real_response
 
 
 # TODO: parameterize test for multiple article
-
-
 class TestScienceAlertSpider(unittest.TestCase):
     def setUp(self) -> None:
         self.spider = ScienceAlertSpider()
 
-    def test_parse_news(self):
+    def test_parse_news_offline(self):
         # response fetched from https://www.sciencealert.com/a-physician-answers-5-questions-about-asymptomatic-covid-19
         response = fake_response('sciencealert-example.html')
+        self._test_parse_news(response)
+
+    def test_parse_news_online(self):
+        response = real_response("https://www.sciencealert.com/a-physician-answers-5-questions-about-asymptomatic-covid-19")
+        self._test_parse_news(response)
+
+    def _test_parse_news(self, response: TextResponse):
         item = next(self.spider.parse_news(response))
 
         self.assertEqual(item['title'],

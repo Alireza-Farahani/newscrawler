@@ -1,17 +1,26 @@
 import unittest
 from datetime import date
 
+from scrapy.http import TextResponse
+
 from spiders.sciencedaily import ScienceDailySpider
-from tests.utils import fake_response
+from tests.utils import fake_response, real_response
 
 
 class TestScienceDailySpider(unittest.TestCase):
     def setUp(self) -> None:
         self.spider = ScienceDailySpider()
 
-    def test_parse_news(self):
+    def test_parse_news_offline(self):
         # response fetched from https://www.sciencedaily.com/releases/2020/05/200507194907.htm
         response = fake_response('sciencedaily-example.html')
+        self._test_parse_news(response)
+
+    def test_parse_news_online(self):
+        response = real_response("https://www.sciencedaily.com/releases/2020/05/200507194907.htm")
+        self._test_parse_news(response)
+
+    def _test_parse_news(self, response: TextResponse):
         item = next(self.spider.parse_news(response))
 
         self.assertEqual(item['title'],

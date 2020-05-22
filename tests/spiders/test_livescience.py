@@ -1,8 +1,10 @@
 import unittest
 from datetime import date
 
+from scrapy.http import Response
+
 from spiders.livescience import LiveScienceSpider
-from tests.utils import fake_response
+from tests.utils import fake_response, real_response
 
 
 # TODO: parameterize test for multiple article
@@ -10,9 +12,16 @@ class TestLiveScienceSpider(unittest.TestCase):
     def setUp(self) -> None:
         self.spider = LiveScienceSpider()
 
-    def test_parse_news(self):
+    def test_parse_news_offline(self):
         # response fetched from https://www.livescience.com/5g-coronavirus-conspiracy-theory-debunked.html
         response = fake_response('livescience-example.html')
+        self._test_parse_news(response)
+
+    def test_parse_news_online(self):
+        response = real_response("https://www.livescience.com/5g-coronavirus-conspiracy-theory-debunked.html")
+        self._test_parse_news(response)
+
+    def _test_parse_news(self, response: Response):
         item = next(self.spider.parse_news(response))
         self.assertEqual(item['title'],
                          "5G is not linked to the coronavirus pandemic in any way. Here's the science.", )

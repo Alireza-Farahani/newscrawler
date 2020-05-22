@@ -27,7 +27,8 @@ class ScientificAmericanSpider(Spider):
 
     def parse_news(self, response: TextResponse):
         if self.is_paid_article(response):
-            yield  # spider callback MOST return either a generator or a dict/item like object
+            # TODO: maybe updating 'stats'
+            return  # spider callback MOST return either a generator or a dict/item like object
 
         loader: ItemLoader = ScientificAmericanLoader(item=ArticleItem(), response=response)
         loader.add_value('url', response.url)

@@ -2,19 +2,28 @@ import unittest
 from datetime import date
 from typing import List
 
+from scrapy.http import TextResponse
+
 from items import ScienceNewsLoader, ArticleItem
 from spiders.sciencenews import ScienceNewsSpider
-from tests.utils import fake_response
+from tests.utils import fake_response, real_response
 
 
 class TestScienceNewsSpider(unittest.TestCase):
     def setUp(self) -> None:
         self.spider = ScienceNewsSpider()
 
-    def test_parse_news(self):
+    def test_parse_news_offline(self):
         # response fetched from
         # https://www.sciencenews.org/article/coronavirus-covid-19-proteins-super-computer-fight-pandemic
         response = fake_response('sciencenews-example.html')
+        self._test_parse_news(response)
+
+    def test_parse_news_online(self):
+        response = real_response("https://www.sciencenews.org/article/coronavirus-covid-19-proteins-super-computer-fight-pandemic")
+        self._test_parse_news(response)
+
+    def _test_parse_news(self, response: TextResponse):
         item = next(self.spider.parse_news(response))
 
         self.assertEqual(item['title'],
@@ -29,10 +38,17 @@ class TestScienceNewsSpider(unittest.TestCase):
         self.assertEqual(content_pars[0], "Staying home isn’t the only way to help fight the coronavirus pandemic.")
         self.assertNotIn('\n', content_pars[1])  # ensure no unnecessary new line
 
-    # TODO: single parameterize test for both author_date formats
-    def test_author_date_featured_article(self):
+    def test_author_date_featured_article_offline(self):
         # response fetched from https://www.sciencenews.org/article/susan-milius-your-guide-peculiarities-nature
         response = fake_response('sciencenews-example-featured.html')
+        self._test_author_date_featured_article(response)
+
+    def test_author_date_featured_article_online(self):
+        response = real_response("https://www.sciencenews.org/article/susan-milius-your-guide-peculiarities-nature")
+        self._test_author_date_featured_article(response)
+
+    # TODO: single parameterize test for both author_date formats
+    def _test_author_date_featured_article(self, response: TextResponse):
         loader = ScienceNewsLoader(item=ArticleItem(), response=response)
         self.spider.parse_author_date(loader)
         item = loader.load_item()
