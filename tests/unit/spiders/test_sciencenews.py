@@ -1,5 +1,5 @@
 import unittest
-from datetime import date
+from datetime import datetime
 from typing import List
 
 from scrapy.http import TextResponse
@@ -27,7 +27,7 @@ class TestScienceNewsSpider(unittest.TestCase):
         self.assertEqual(item['subtitle'],
                          "Donating computing time can help create a virtual supercomputer that can search for a cure")
         self.assertEqual(item['author'], "Maria Temming")
-        self.assertEqual(item['date'], date(2020, 3, 25))
+        self.assertEqual(item['date'], datetime(2020, 3, 25))
 
         content_pars: List[str] = item['content'].split('\n\n')
         self.assertEqual(len(content_pars), 14)
@@ -46,7 +46,7 @@ class TestScienceNewsSpider(unittest.TestCase):
         item = loader.load_item()
 
         self.assertEqual(item['author'], 'Nancy Shute')
-        self.assertEqual(item['date'], date(2020, 4, 19))
+        self.assertEqual(item['date'], datetime(2020, 4, 19))
 
 
 if __name__ == '__main__':

@@ -51,8 +51,9 @@ class LiveScienceArticleLoader(ArticleLoader):
 
     date_out = Compose(
         TakeFirst(),
-        lambda iso_date: iso_date.replace("Z", "+00:00"),  # https://stackoverflow.com/q/19654578/1660013
-        lambda iso_date: datetime.fromisoformat(iso_date).date(),
+        # lambda iso_date: iso_date.replace("Z", "+00:00"),  # https://stackoverflow.com/q/19654578/1660013
+        lambda iso_date: iso_date[:iso_date.find("T")],  # removing timezone info
+        lambda iso_date: datetime.fromisoformat(iso_date),
     )
 
 
@@ -75,7 +76,7 @@ class ScienceAlertLoader(ArticleLoader):
 
     date_out = Compose(  # sciencealert format: 3 FEBRUARY 2020
         TakeFirst(),
-        lambda date_str: datetime.strptime(date_str, "%d %B %Y").date(),
+        lambda date_str: datetime.strptime(date_str, "%d %B %Y"),
     )
 
 
@@ -88,7 +89,7 @@ class ScienceDailyArticleLoader(ArticleLoader):
 
     date_out = Compose(
         TakeFirst(),
-        lambda date_str: datetime.strptime(date_str, "%B %d, %Y").date(),
+        lambda date_str: datetime.strptime(date_str, "%B %d, %Y"),
     )
 
 
@@ -103,7 +104,8 @@ class ScienceNewsLoader(ArticleLoader):
 
     date_out = Compose(
         TakeFirst(),
-        lambda iso_date: datetime.fromisoformat(iso_date).date(),
+        lambda iso_date: iso_date[:iso_date.find("T")],  # removing timezone info
+        lambda iso_date: datetime.fromisoformat(iso_date),
     )
 
 
@@ -122,5 +124,5 @@ class ScientificAmericanLoader(ArticleLoader):
 
     date_out = Compose(
         TakeFirst(),
-        lambda date_str: datetime.strptime(date_str, "%B %d, %Y").date()
+        lambda date_str: datetime.strptime(date_str, "%B %d, %Y")
     )

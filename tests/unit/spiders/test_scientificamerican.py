@@ -1,5 +1,5 @@
 import unittest
-from datetime import date
+from datetime import datetime
 
 from scrapy.http import TextResponse
 
@@ -38,7 +38,7 @@ class TestScientificAmericanSpider(unittest.TestCase):
                          "Compassionate use of experimental medicine needs to coexist with scientific rigor to help "
                          "patients, researchers write in the journal Science")
         self.assertEqual(item['author'], "Anna Kuchment")
-        self.assertEqual(item['date'], date(2020, 4, 24))
+        self.assertEqual(item['date'], datetime(2020, 4, 24))
 
         content: str = item['content']
         for word in ("Read more about",  # no extra info
@@ -59,7 +59,7 @@ class TestScientificAmericanSpider(unittest.TestCase):
         self.assertEqual(item['subtitle'],
                          "Do recent explanations solve the mysteries of aerodynamic lift?")
         self.assertEqual(item['author'], "Ed Regis")
-        self.assertEqual(item['date'], date(2020, 2, 1))
+        self.assertEqual(item['date'], datetime(2020, 2, 1))
 
         content: str = item['content']
         for word in ("Read more about",  # no extra info

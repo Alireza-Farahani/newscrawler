@@ -1,5 +1,6 @@
 import unittest
-from datetime import date
+from datetime import datetime
+from datetime import timezone
 
 from scrapy.http import Response
 
@@ -23,7 +24,7 @@ class TestLiveScienceSpider(unittest.TestCase):
                          "5G is not linked to the coronavirus pandemic in any way. Here's the science.", )
         self.assertEqual(item['subtitle'],
                          "Peddling such misinformation is not only wrong, it's destructive.", )
-        self.assertEqual(item['date'], date(2020, 4, 9))  # 2020-04-09T18:26:28Z
+        self.assertEqual(item['date'], datetime(2020, 4, 9))  # 2020-04-09T18:26:28Z
         self.assertEqual(item['author'], 'Stanley Shanapinda')
 
         content: str = item['content']

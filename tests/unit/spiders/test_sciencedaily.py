@@ -1,5 +1,5 @@
 import unittest
-from datetime import date
+from datetime import datetime
 
 from scrapy.http import TextResponse
 
@@ -25,7 +25,7 @@ class TestScienceDailySpider(unittest.TestCase):
                          "Research could change standard of care protocols to prevent clotting associated with "
                          "coronavirus")
 
-        self.assertEqual(item['date'], date(2020, 5, 7))
+        self.assertEqual(item['date'], datetime(2020, 5, 7))
         self.assertEqual(item['source'], "The Mount Sinai Hospital / Mount Sinai School of Medicine")
         self.assertEqual(item['source_article_url'],
                          "https://www.mountsinai.org/about/newsroom/2020/blood-thinners-may-improve-survival-among"

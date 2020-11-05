@@ -1,5 +1,5 @@
 import unittest
-from datetime import date
+from datetime import datetime
 
 from scrapy.http import TextResponse
 
@@ -24,7 +24,7 @@ class TestScienceAlertSpider(unittest.TestCase):
         self.assertEqual(item['title'],
                          "Could You Be an Asymptomatic COVID-19 Carrier? Here's What You Need to Know", )
         self.assertEqual(item['date'],  # 1 MAY 2020
-                         date(2020, 5, 1))
+                         datetime(2020, 5, 1))
         self.assertEqual(item['author'],
                          'William Petri')
 
@@ -60,7 +60,7 @@ class TestScienceAlertSpider(unittest.TestCase):
         item = loader.load_item()
 
         self.assertEqual(item['author'], 'Amelie Bottollier-Depois')
-        self.assertEqual(item['date'], date(2020, 5, 7))
+        self.assertEqual(item['date'], datetime(2020, 5, 7))
 
     def test_parse_author_date_format2(self):
         response = fake_response_by_body("""
@@ -80,7 +80,7 @@ class TestScienceAlertSpider(unittest.TestCase):
         item = loader.load_item()
 
         self.assertEqual(item['author'], 'Peter Ellis')
-        self.assertEqual(item['date'], date(2020, 5, 8))
+        self.assertEqual(item['date'], datetime(2020, 5, 8))
 
 
 if __name__ == '__main__':
