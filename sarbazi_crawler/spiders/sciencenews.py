@@ -27,7 +27,7 @@ class ScienceNewsSpider(Spider):
         header_loader.add_css('title', 'h1')
         header_loader.add_css('subtitle', 'h2')
         self.parse_author_date(loader)
-        loader.add_css('content', 'main#content .content .rich-text > p')
+        loader.add_css('content', 'main#content *[class*="body"] *[class*="content"] .rich-text > p')
 
         yield loader.load_item()
 
