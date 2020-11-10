@@ -38,7 +38,7 @@ class ScientificAmericanSpider(Spider):
             else:  # some featured articles have different layout e.g.
                 # TODO recursive redirection when using scrapy
                 # https://www.scientificamerican.com/article/no-one-can-explain-why-planes-stay-in-the-air/
-                print("---**------------ThErE!-----------**-")
+                # print("---**------------ThErE!-----------**-")
                 yield self.load_featured_article(loader)
 
     # noinspection PyMethodMayBeStatic

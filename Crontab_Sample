@@ -1,0 +1,3 @@
+NEWS_CRAWLER=/home/alireza/PycharmProjects/CrawlerTest
+#* * * * * env > /tmp/env.output
+* * * * * $NEWS_CRAWLER/run.sh > /tmp/cronjob.log 2>&1

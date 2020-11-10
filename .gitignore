@@ -1,7 +1,11 @@
 # Created by .ignore support plugin (hsz.mobi)
 
 ### Project specific rules
+# crawlers job info
 crawls/
+
+# log files
+*.log
 
 ### Python template
 # Byte-compiled / optimized / DLL files
