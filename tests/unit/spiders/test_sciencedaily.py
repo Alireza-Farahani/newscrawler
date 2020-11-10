@@ -3,7 +3,7 @@ from datetime import datetime
 
 from scrapy.http import TextResponse
 
-from spiders.sciencedaily import ScienceDailySpider
+from sarbazi_crawler.spiders.sciencedaily import ScienceDailySpider
 from tests.utils import fake_response
 
 

@@ -1,7 +1,7 @@
 import unittest
 
 from tests.utils import real_response
-from unit.spiders.test_sciencealert import TestScienceAlertSpider
+from tests.unit.spiders.test_sciencealert import TestScienceAlertSpider
 
 
 class TestScienceAlertSpiderOnline(TestScienceAlertSpider):

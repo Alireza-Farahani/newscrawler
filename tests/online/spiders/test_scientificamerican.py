@@ -3,7 +3,7 @@ import unittest
 from scrapy import FormRequest
 
 from tests.utils import real_response
-from unit.spiders.test_scientificamerican import TestScientificAmericanSpider
+from tests.unit.spiders.test_scientificamerican import TestScientificAmericanSpider
 
 free_normal_article_url = "https://www.scientificamerican.com/article/shortcuts-in-covid-19-drug-research-could-do-long-term-harm-bioethicists-worry/"
 free_featured_article_url = "https://www.scientificamerican.com/article/no-one-can-explain-why-planes-stay-in-the-air/"

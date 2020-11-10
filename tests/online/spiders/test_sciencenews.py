@@ -1,7 +1,7 @@
 import unittest
 
 from tests.utils import real_response
-from unit.spiders.test_sciencenews import TestScienceNewsSpider
+from tests.unit.spiders.test_sciencenews import TestScienceNewsSpider
 
 
 class TestScienceNewsSpiderOnline(TestScienceNewsSpider):

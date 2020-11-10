@@ -3,8 +3,8 @@ from datetime import datetime
 
 from scrapy.http import TextResponse
 
-from items import ScientificAmericanLoader, ArticleItem
-from spiders.scientificamerican import ScientificAmericanSpider
+from sarbazi_crawler.items import ScientificAmericanLoader, ArticleItem
+from sarbazi_crawler.spiders.scientificamerican import ScientificAmericanSpider
 from tests.utils import fake_response
 
 

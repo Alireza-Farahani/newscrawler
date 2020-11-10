@@ -4,8 +4,8 @@ from typing import List
 
 from scrapy.http import TextResponse
 
-from items import ScienceNewsLoader, ArticleItem
-from spiders.sciencenews import ScienceNewsSpider
+from sarbazi_crawler.items import ScienceNewsLoader, ArticleItem
+from sarbazi_crawler.spiders.sciencenews import ScienceNewsSpider
 from tests.utils import fake_response
 
 

@@ -1,10 +1,8 @@
 import unittest
 from datetime import datetime
-from datetime import timezone
-
 from scrapy.http import Response
 
-from spiders.livescience import LiveScienceSpider
+from sarbazi_crawler.spiders.livescience import LiveScienceSpider
 from tests.utils import fake_response
 
 
