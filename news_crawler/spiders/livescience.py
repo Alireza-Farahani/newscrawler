@@ -1,7 +1,7 @@
 from scrapy import Spider
 from scrapy.loader import ItemLoader
 
-from sarbazi_crawler.items import ArticleItem, LiveScienceArticleLoader
+from news_crawler.items import ArticleItem, LiveScienceArticleLoader
 
 
 class LiveScienceSpider(Spider):

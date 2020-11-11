@@ -3,7 +3,7 @@ from itertools import chain
 from scrapy import Spider
 from scrapy.loader import ItemLoader
 
-from sarbazi_crawler.items import ArticleItem, ScienceDailyArticleLoader
+from news_crawler.items import ArticleItem, ScienceDailyArticleLoader
 
 
 class ScienceDailySpider(Spider):

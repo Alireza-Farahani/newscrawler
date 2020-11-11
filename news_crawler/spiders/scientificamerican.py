@@ -2,7 +2,7 @@ from scrapy import Spider, FormRequest
 from scrapy.http import TextResponse
 from scrapy.loader import ItemLoader
 
-from sarbazi_crawler.items import ScientificAmericanLoader, ArticleItem
+from news_crawler.items import ScientificAmericanLoader, ArticleItem
 
 
 # SA = scientific american

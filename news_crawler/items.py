@@ -14,7 +14,7 @@ from w3lib.html import remove_tags, remove_tags_with_content
 # TODO: base item, having an id to be checked in DuplicatePipeline. For example 'url' could be id for Articles
 # class BaseItem(scrapy.Item)
 # class Article(BaseItem)
-from sarbazi_crawler.utils import DropLast, Replace, remove_unicode_whitespaces
+from news_crawler.utils import DropLast, Replace, remove_unicode_whitespaces
 
 
 class ArticleItem(scrapy.Item):

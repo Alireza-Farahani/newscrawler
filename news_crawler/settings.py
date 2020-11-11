@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Scrapy settings for sarbazi_crawler project
+# Scrapy settings for news_crawler project
 #
 # For simplicity, this file contains only settings considered important or
 # commonly used. You can find more settings consulting the documentation:
@@ -9,14 +9,14 @@
 #     https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 #     https://docs.scrapy.org/en/latest/topics/spider-middleware.html
 
-BOT_NAME = 'sarbazi_crawler'
+BOT_NAME = 'news_crawler'
 
-SPIDER_MODULES = ['sarbazi_crawler.spiders']
-NEWSPIDER_MODULE = 'sarbazi_crawler.spiders'
+SPIDER_MODULES = ['news_crawler.spiders']
+NEWSPIDER_MODULE = 'news_crawler.spiders'
 
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
-#USER_AGENT = 'sarbazi_crawler (+http://www.yourdomain.com)'
+#USER_AGENT = 'news_crawler (+http://www.yourdomain.com)'
 USER_AGENT = 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:75.0) Gecko/20100101 Firefox/75.0'
 
 # Obey robots.txt rules
@@ -48,13 +48,13 @@ ROBOTSTXT_OBEY = True
 # Enable or disable spider middlewares
 # See https://docs.scrapy.org/en/latest/topics/spider-middleware.html
 #SPIDER_MIDDLEWARES = {
-#    'sarbazi_crawler.middlewares.SarbaziCrawlerSpiderMiddleware': 543,
+#    'news_crawler.middlewares.SarbaziCrawlerSpiderMiddleware': 543,
 #}
 
 # Enable or disable downloader middlewares
 # See https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 #DOWNLOADER_MIDDLEWARES = {
-#    'sarbazi_crawler.middlewares.SarbaziCrawlerDownloaderMiddleware': 543,
+#    'news_crawler.middlewares.SarbaziCrawlerDownloaderMiddleware': 543,
 #}
 
 # Enable or disable extensions
@@ -66,9 +66,9 @@ ROBOTSTXT_OBEY = True
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
-    # 'sarbazi_crawler.pipelines.SarbaziCrawlerPipeline': 300,
-    'sarbazi_crawler.pipelines.DuplicatesPipeline': 300,
-    'sarbazi_crawler.pipelines.MongoDBPipeline': 310
+    # 'news_crawler.pipelines.SarbaziCrawlerPipeline': 300,
+    'news_crawler.pipelines.DuplicatesPipeline': 300,
+    'news_crawler.pipelines.MongoDBPipeline': 310
 }
 # TODO: user pass? different address per environment
 MONGO_URI = 'localhost:27017'

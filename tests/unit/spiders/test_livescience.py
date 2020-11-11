@@ -2,7 +2,7 @@ import unittest
 from datetime import datetime
 from scrapy.http import Response
 
-from sarbazi_crawler.spiders.livescience import LiveScienceSpider
+from news_crawler.spiders.livescience import LiveScienceSpider
 from tests.utils import fake_response
 
 

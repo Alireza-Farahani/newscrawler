@@ -2,7 +2,7 @@ from scrapy import Spider
 from scrapy.http import Response, TextResponse
 from scrapy.loader import ItemLoader
 
-from sarbazi_crawler.items import ArticleItem, ScienceAlertLoader
+from news_crawler.items import ArticleItem, ScienceAlertLoader
 
 
 class ScienceAlertSpider(Spider):

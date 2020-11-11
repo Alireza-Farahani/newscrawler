@@ -1,6 +1,5 @@
 import functools
 import os
-from typing import Any
 
 import scrapydo
 from scrapy.http import TextResponse, Response

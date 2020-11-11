@@ -6,11 +6,12 @@
 #fi
 # also see https://github.com/koalaman/shellcheck/wiki/SC2181
 
-proj_dir="${PROJECT_DIR:-/home/alireza/PycharmProjects/CrawlerTest}"
+proj_dir="${PROJECT_DIR:-/home/alireza/PycharmProjects/NewsCrawler}"
 if [ "$(pwd)" != "$proj_dir" ]; then  # cd fails when current directory is the target directory
   cd "$proj_dir" || exit
 fi
 
+echo "Performing Online tests..."
 source ./venv/bin/activate
 
 #python_code="import os
@@ -22,11 +23,11 @@ source ./venv/bin/activate
 #python3 -c "import sys; import os; print(sys.path)"
 
 # -s/--start-directory Directory to start discovery (default is current directory)
-test_command="python3 -m unittest discover --start-directory $proj_dir/tests/unit/spiders"
+test_command="python3 -m unittest discover --start-directory $proj_dir/tests/online/spiders"
 if $test_command 2>test_res.log; then  # `unittest` result goes to stderr and I couldn't capture stderr in a variable.
-  echo "Unit tests passed successfully"
+  echo "Online tests passed successfully"
 else
-  echo "Unit tests not passed" >>/dev/stderr
+  echo "Online tests not passed" >>/dev/stderr
 #  ./send_alert.py --subject "Unittests Failed" --body #TODO: send email, notif, whatever.
 #  ./send_alert.sh "Unittests Failed" "$(cat test_res.log)"
   exit 1

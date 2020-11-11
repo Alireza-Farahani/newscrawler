@@ -1,2 +1,5 @@
-pymongo
-Scrapy>=2.1.0
+pymongo   # connection to mongodb
+Scrapy
+
+scrapydo  # getting synchoronous response in online tests
+w3lib
