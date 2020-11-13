@@ -28,11 +28,16 @@ class TestScientificAmericanSpiderOnline(TestScientificAmericanSpider):
 
         self.assertGreaterEqual(len(list(self.spider.parse_subtopic(response))), 10)
 
-    def test_parse_news(self):
+    # Paid articles are determined from SA based on your cookies. We don't consider them for online tests.
+    def test_parse_news_normal_article(self):
         free_normal = real_response(free_normal_article_url)
+        item = next(self.spider.parse_news(free_normal))
+        self.assertEqual(len(item), 6)
+
+    def test_parse_news_featured_article(self):
         free_featured = real_response(free_featured_article_url)
-        paid = real_response(paid_article_url)
-        self._test_parse_news(free_normal, free_featured, paid)
+        item = next(self.spider.parse_news(free_featured))
+        self.assertEqual(len(item), 6)
 
 
 if __name__ == '__main__':

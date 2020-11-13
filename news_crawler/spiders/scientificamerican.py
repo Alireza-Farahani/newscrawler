@@ -1,49 +1,65 @@
 from scrapy import Spider, FormRequest
+from scrapy.exceptions import DropItem
 from scrapy.http import TextResponse
 from scrapy.loader import ItemLoader
 
 from news_crawler.items import ScientificAmericanLoader, ArticleItem
 
 
-# SA = scientific american
 class ScientificAmericanSpider(Spider):
     name = 'scientificamerican'
     allowed_domains = ['scientificamerican.com']
+    custom_settings = {
+        'COOKIES_ENABLED': False,
+    }
     start_urls = [
         'https://www.scientificamerican.com/tech/',
-        # 'https://www.scientificamerican.com/health/'
-        # 'https://www.scientificamerican.com/computing/',
+        # 'https://www.scientificamerican.com/health/',
+        # 'https://www.scientificamerican.com/the-sciences/',
     ]
 
     def parse(self, response: TextResponse):
         sub_topics = response.css('#topic-list a::attr(href)').getall()
         for link in sub_topics:
-            # SA lists all type including video and podcast. We do a filtering like what website does for articles only.
+            # ScientificAmerican lists all type including video and podcast. We do a filtering for articles only.
             yield FormRequest(link, formdata={'source': 'article'}, callback=self.parse_subtopic)
 
     def parse_subtopic(self, response: TextResponse):
         articles = response.css('div.panel div.section-latest h2 a')
-        yield from response.follow_all(articles, callback=self.parse_news, )
+        yield from response.follow_all(articles,
+                                       callback=self.parse_news,
+                                       meta={'dont_redirect': True, "handle_httpstatus_list": [301, 302, 303]})
 
     def parse_news(self, response: TextResponse):
+        # featured article get in redirection loop by SA if cookies are disabled.
+        # Example url: https://www.scientificamerican.com/article/no-one-can-explain-why-planes-stay-in-the-air/
+        if response.status in [301, 302, 303]:
+            self.logger.error(f'redirect code {response.status} for {response.url}!')
+            yield self.handle_redirection(response)
+
         # TODO: maybe updating 'stats'
         if self.is_paid_article(response):
-            yield  # spider callback MOST return either a generator or a dict/item like object
-        else:
-            loader: ItemLoader = ScientificAmericanLoader(item=ArticleItem(), response=response)
-            loader.add_value('url', response.url)
+            return  # spider callback MOST return either a generator or a dict/item like object???
 
-            if not self.is_featured_article(response):
-                yield self.load_normal_article(loader)
-            else:  # some featured articles have different layout e.g.
-                # TODO recursive redirection when using scrapy
-                # https://www.scientificamerican.com/article/no-one-can-explain-why-planes-stay-in-the-air/
-                # print("---**------------ThErE!-----------**-")
-                yield self.load_featured_article(loader)
+        loader: ItemLoader = ScientificAmericanLoader(item=ArticleItem(), response=response)
+        loader.add_value('url', response.url)
+
+        # featured articles have different layout e.g.
+        if self.is_featured_article(response):
+            yield self.load_featured_article(loader)
+        else:
+            yield self.load_normal_article(loader)
+
+    def handle_redirection(self, response: TextResponse):
+        self.logger.error('redirect needed!')
+        # manually set cookies for next request
+        # https://stackoverflow.com/questions/36443246/how-to-get-cookie-from-scrapy-response-and-set-the-cookie-to-the-next-request
+        # TODO: send/log error
+        raise DropItem("redirection not handled for Scientific America yet.")
 
     # noinspection PyMethodMayBeStatic
     def is_paid_article(self, response: TextResponse):
-        return response.css("aside.paywall")
+        return response.css(".paywall")
 
     # noinspection PyMethodMayBeStatic
     def is_featured_article(self, response: TextResponse):

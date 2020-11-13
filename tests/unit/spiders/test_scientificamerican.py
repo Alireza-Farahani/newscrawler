@@ -82,8 +82,7 @@ class TestScientificAmericanSpider(unittest.TestCase):
         item = next(self.spider.parse_news(free_featured))
         self.assertEqual(len(item), 6)
 
-        item = next(self.spider.parse_news(paid))
-        self.assertIsNone(item)
+        self.assertRaises(StopIteration, lambda: next(self.spider.parse_news(paid)))
 
 
 if __name__ == '__main__':
