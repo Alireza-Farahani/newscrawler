@@ -12,6 +12,9 @@ class ScienceNewsSpider(Spider):
     start_urls = [
         'https://www.sciencenews.org/topic/tech',
     ]
+    custom_settings = {
+        'SPIDERMON_VALIDATION_MODELS': ['news_crawler.validators.ScienceNewsValidatorItem'],
+    }
 
     def parse(self, response: TextResponse):
         latest_articles = response.css('main#content article[class*="expanded-feature"] *[class*="title"] a')

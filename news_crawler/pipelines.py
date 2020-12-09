@@ -33,15 +33,17 @@ class CustomItemValidationPipeline(ItemValidationPipeline):
             errors_field=None,
     ):
         super().__init__(validators, stats, drop_items_with_errors, add_errors_to_items, errors_field)
-        self.spider_name: str = "not specified"
+        self.errors_file: str = "not specified"
         utc_dt = datetime.now(timezone.utc)  # UTC time
         self.tehran_time = utc_dt.astimezone()  # local time
 
     def open_spider(self, spider: Spider):
-        self.spider_name = spider.name
+        self.errors_file = f'{self.tehran_time.date()}-{spider.name}-errors.log'
+        with open(self.errors_file, mode="a") as errors_file:
+            errors_file.write("\n\n")
 
     def _drop_item(self, item, errors):
-        with open(f'{self.tehran_time.date()}-{self.spider_name}-errors.log', mode="a") as errors_file:
+        with open(self.errors_file, mode="a") as errors_file:
             item[self.errors_field]['url'] = item['url']
             errors_file.write(str(item[self.errors_field]) + "\n")
 

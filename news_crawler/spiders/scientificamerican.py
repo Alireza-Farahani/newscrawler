@@ -9,14 +9,16 @@ from news_crawler.items import ScientificAmericanLoader, ArticleItem
 class ScientificAmericanSpider(Spider):
     name = 'scientificamerican'
     allowed_domains = ['scientificamerican.com']
-    custom_settings = {
-        'COOKIES_ENABLED': False,
-    }
     start_urls = [
         'https://www.scientificamerican.com/tech/',
         # 'https://www.scientificamerican.com/health/',
         # 'https://www.scientificamerican.com/the-sciences/',
     ]
+
+    custom_settings = {
+        'COOKIES_ENABLED': False,
+        'SPIDERMON_VALIDATION_MODELS': ['news_crawler.validators.ScientificAmericanValidatorItem'],
+    }
 
     def parse(self, response: TextResponse):
         sub_topics = response.css('#topic-list a::attr(href)').getall()
@@ -51,7 +53,6 @@ class ScientificAmericanSpider(Spider):
             yield self.load_normal_article(loader)
 
     def handle_redirection(self, response: TextResponse):
-        self.logger.error('redirect needed!')
         # manually set cookies for next request
         # https://stackoverflow.com/questions/36443246/how-to-get-cookie-from-scrapy-response-and-set-the-cookie-to-the-next-request
         # TODO: send/log error

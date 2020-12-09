@@ -14,6 +14,9 @@ class ScienceDailySpider(Spider):
         'https://www.sciencedaily.com/news/computers_math/',
         'https://www.sciencedaily.com/news/space_time/',
     ]
+    custom_settings = {
+        'SPIDERMON_VALIDATION_MODELS': ['news_crawler.validators.ScienceDailyValidatorItem'],
+    }
 
     def parse(self, response):
         # In Sciencedaily category pages, news link are separated in 3 segment:
@@ -39,10 +42,10 @@ class ScienceDailySpider(Spider):
         loader.add_value('url', response.url)
 
         loader.add_css('title', 'h1#headline')
-        loader.add_css('subtitle', 'h2#subtitle')  # optional
 
-        loader.add_css('date', 'dd#date_posted')  #
-        loader.add_css('source', 'dd#source')  #
+        loader.add_css('subtitle', 'dd#abstract')
+        loader.add_css('date', 'dd#date_posted')
+        loader.add_css('source', 'dd#source')
 
         loader.add_css('content', 'div#text > p')  # <p>s are joined in related 'Item Loader'
 

@@ -22,8 +22,10 @@ class TestScienceDailySpider(unittest.TestCase):
         self.assertEqual(item['title'],
                          "Blood thinners may improve survival among hospitalized COVID-19 patients")
         self.assertEqual(item['subtitle'],
-                         "Research could change standard of care protocols to prevent clotting associated with "
-                         "coronavirus")
+                         "Treating hospitalized COVID-19 patients with anticoagulants -- blood thinners that slow "
+                         "down clotting -- may improve their chances of survival, researchers report. The study could "
+                         "provide new insight on how to treat and manage coronavirus patients once they are admitted "
+                         "to the hospital.")
 
         self.assertEqual(item['date'], datetime(2020, 5, 7))
         self.assertEqual(item['source'], "The Mount Sinai Hospital / Mount Sinai School of Medicine")

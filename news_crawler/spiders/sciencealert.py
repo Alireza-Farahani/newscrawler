@@ -13,6 +13,9 @@ class ScienceAlertSpider(Spider):
         'https://www.sciencealert.com/tech',
         # 'https://www.sciencealert.com/physics',
     ]
+    custom_settings = {
+        'SPIDERMON_VALIDATION_MODELS': ['news_crawler.validators.ScienceAlertValidatorItem'],
+    }
 
     def parse(self, response: Response):
         latest_news = response.css("div#rt-mainbody div.latestnews div.titletext a")
@@ -39,7 +42,8 @@ class ScienceAlertSpider(Spider):
 
         yield loader.load_item()
 
-    def parse_author_date(self, loader: ScienceAlertLoader) -> None:
+    @staticmethod
+    def parse_author_date(loader: ScienceAlertLoader) -> None:
         # some articles have date in div.author-name-name! e.g.
         # https://www.sciencealert.com/us-life-expectancy-just-increased-for-the-first-time-in-4-years
         # So in these cases we pick second 'author-name-name'
