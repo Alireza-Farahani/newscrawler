@@ -11,6 +11,9 @@ class LiveScienceSpider(Spider):
         'https://www.livescience.com/technology',
         'https://www.livescience.com/health',
     ]
+    custom_settings = {
+        'SPIDERMON_VALIDATION_MODELS': ['news_crawler.validators.LiveScienceValidatorItem'],
+    }
 
     def parse(self, response):
         latest_news = response.css("div#content section a.article-link")

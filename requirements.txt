@@ -1,5 +1,13 @@
-pymongo   # connection to mongodb
 Scrapy
 
+# connection to mongodb
+pymongo
+
+# monitoring and validating
+spidermon[monitoring,validation]
+schematics
+Jinja2
+
+# test
 scrapydo  # getting synchoronous response in online tests
 w3lib
