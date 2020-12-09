@@ -6,3 +6,4 @@
 # also we can use 'crawl spider1 spider2 spider3'
 
 scrapy list|xargs -n 1 -I % scrapy crawl % -s JOBDIR=crawls/%
+scrapy list|xargs -n 1 -I % scrapy crawl -L INFO %

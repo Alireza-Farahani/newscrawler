@@ -18,14 +18,16 @@ from news_crawler.utils import DropLast, Replace, remove_unicode_whitespaces
 
 
 class ArticleItem(scrapy.Item):
-    url = scrapy.Field()  # all sites
-    title = scrapy.Field()  # all sites
-    subtitle = scrapy.Field()  # sciencedaily, livescience
-    author = scrapy.Field()
+    url = scrapy.Field()  # all
+    title = scrapy.Field()  # all
+    subtitle = scrapy.Field()  # all except ScienceAlert
+    author = scrapy.Field()  # all but optional in some.
     date = scrapy.Field()  # all
+    content = scrapy.Field()  # all
+
     source = scrapy.Field()  # optional in sciencedaily, sciencealert
     source_article_url = scrapy.Field()  # optional in sciencedaily, sciencealert TODO:
-    content = scrapy.Field()  # all
+    archived = scrapy.Field()  # optional in SA
     # category = scrapy.Field  # all TODO: how to know the category? only sciencealert has it per article
 
 
@@ -125,4 +127,9 @@ class ScientificAmericanLoader(ArticleLoader):
     date_out = Compose(
         TakeFirst(),
         lambda date_str: datetime.strptime(date_str, "%B %d, %Y")
+    )
+
+    archived_in = Compose(
+        TakeFirst(),
+        int
     )

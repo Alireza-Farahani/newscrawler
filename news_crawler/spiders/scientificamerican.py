@@ -2,6 +2,7 @@ from scrapy import Spider, FormRequest
 from scrapy.exceptions import DropItem
 from scrapy.http import TextResponse
 from scrapy.loader import ItemLoader
+from scrapy.loader.processors import TakeFirst
 
 from news_crawler.items import ScientificAmericanLoader, ArticleItem
 
@@ -70,9 +71,20 @@ class ScientificAmericanSpider(Spider):
     def load_normal_article(self, loader: ItemLoader) -> ArticleItem:
         article_header_loader: ItemLoader = loader.nested_css('#sa_body article header')
         article_header_loader.add_css('title', '.t_article-title')
-        article_header_loader.add_css('subtitle', '.t_article-subtitle')
+
+        # archived article are like normal article, but have a "Originally published" in their subtitles
+        def is_archived_article(header_loader: ItemLoader) -> bool:
+            subtitle_tag: str = header_loader.get_css('.t_article-subtitle', TakeFirst())
+            return "originally published" in subtitle_tag.lower()
+
+        if is_archived_article(article_header_loader):
+            article_header_loader.add_css('archived', '.t_article-subtitle', re=r'(\d+)')
+        else:
+            article_header_loader.add_css('subtitle', '.t_article-subtitle')
+
         article_header_loader.add_css('author', 'span[itemprop="author"] a')
         article_header_loader.add_css('date', '*[itemprop="datePublished"]')
+
         article_body_loader: ItemLoader = loader.nested_css('#sa_body article section')
         article_body_loader.add_css('content', 'div.mura-region-local > p')
         return loader.load_item()
@@ -87,3 +99,5 @@ class ScientificAmericanSpider(Spider):
 
         loader.add_css('content', 'div.mura-region-local > p')
         return loader.load_item()
+
+

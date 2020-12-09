@@ -1,5 +1,5 @@
 from schematics import Model
-from schematics.types import URLType, StringType, DateTimeType
+from schematics.types import URLType, StringType, DateTimeType, NumberType, IntType
 
 
 class REGEX:
@@ -48,5 +48,6 @@ class ScientificAmericanValidatorItem(Model):
     title = StringType(required=True)
     content = StringType(required=True)
     date = DateTimeType(required=True)
-    subtitle = StringType(required=True)
-    author = StringType(required=True, regex=REGEX.NO_COMMA)
+    subtitle = StringType()
+    author = StringType(regex=REGEX.NO_COMMA)
+    archived = IntType()
