@@ -23,3 +23,6 @@ services:
     environment:
       MONGO_USERNAME: root
       MONGO_PASSWORD: example
+    depends_on:
+      - mongo
+      - mongo-express
