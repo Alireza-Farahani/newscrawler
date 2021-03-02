@@ -8,6 +8,7 @@
 #     https://docs.scrapy.org/en/latest/topics/settings.html
 #     https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 #     https://docs.scrapy.org/en/latest/topics/spider-middleware.html
+import os
 
 BOT_NAME = 'news_crawler'
 
@@ -84,7 +85,9 @@ ITEM_PIPELINES = {
     'news_crawler.pipelines.MongoDBPipeline': 310
 }
 # TODO: user pass? different address per environment
-MONGO_URI = 'localhost:27017'
+mongo_username = os.environ.get("MONGO_USERNAME", "")
+mongo_password = os.environ.get("MONGO_PASSWORD", "")
+MONGO_URI = f'mongodb://{mongo_username}:{mongo_password}@mongo'
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See https://docs.scrapy.org/en/latest/topics/autothrottle.html
