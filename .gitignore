@@ -4,8 +4,19 @@
 # crawlers job info
 crawls/
 
+# Project Archive
+newscrawler.zip
+requirements.txt.old
+
 # log files
 *.log
+
+# Scrapyd
+dbs/
+twistd.pid
+
+# Gerapy
+gerapy/
 
 ### Python template
 # Byte-compiled / optimized / DLL files
